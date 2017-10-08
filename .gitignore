@@ -1,0 +1,9 @@
+# django
+*.pyc
+.python-version
+venv
+env
+*__pycache__
+backend/static
+*.log
+dev.py

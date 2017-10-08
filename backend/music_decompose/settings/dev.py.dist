@@ -1,0 +1,29 @@
+"""
+Template for settings specific to each developper. Copy this file in your
+local dev environment, remove the .dist extension and complete it with your
+specific settings.
+"""
+
+from .base import * # pylint: disable=W0401
+
+# Database
+# https://docs.djangoproject.com/en/1.11/ref/settings/#databases
+
+BASE_URL = 'http://localhost:8000'
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'music-decompose',
+        'USER': 'your_username',
+        'PASSWORD': '',
+        'HOST': '127.0.0.1',
+        'PORT': '5432',
+    }
+}
+
+CUSTOM_BUNDLE_URL = 'http://localhost:3000/frontend-static/bundle.js'
+
+STATICFILES_DIRS = [
+    '/absolute/path/to/your/frontend/public',
+]

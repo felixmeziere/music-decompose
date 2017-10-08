@@ -1,0 +1,56 @@
+{% load staticfiles %}
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Music Decomposer</title>
+  </head>
+  <body>
+    <!--[if lte IE 9]>
+      <style>
+        .browser-alert-banner {
+          background: darkorange;
+          color: #fff;
+          z-index: 1000;
+          text-align: center;
+        }
+
+        .browser-alert-banner p {
+          padding: 10px 0;
+          color: #fff;
+        }
+
+      </style>
+      <div class="browser-alert-banner">
+        <div class="row">
+          <div class="col-sm-12">
+            <p>Your browser is out of date. To be able to use this website we recommend that you update it or use a different one.</p>
+          </div>
+        </div>
+      </div>
+    <![endif]-->
+    <div id="root">
+      <style>
+        img {
+          display: block;
+          margin-left: auto;
+          margin-right: auto;
+          margin-top: 10%
+        }
+        p {
+          color: #003383;
+          font-family: Roboto, Lucida Grande, DejaVu Sans, Bitstream Vera Sans, Verdana, Arial, sans-serif;
+          text-align: center;
+        }
+      </style>
+      <noscript>
+        <p>We're sorry but this site will not work while javascript is disabled.</p>
+        <p>Learn how to enable javascript on <a href="http://enable-javascript.com/" target="blank">enable-javascript.com</a>.</p>
+      </noscript>
+      <p>Loading...</p>
+    </div>
+    <script src="{{ bundleUrl }}" async></script>
+  </body>
+</html>

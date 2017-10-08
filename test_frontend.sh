@@ -1,2 +1,2 @@
 #!/bin/sh
-cd frontend && eslint . && yarn test && cd..
+cd frontend && yarn lint && yarn test && cd..

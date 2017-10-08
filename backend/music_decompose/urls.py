@@ -22,4 +22,5 @@ urlpatterns = [
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     url(r'^$', views.app, name='app'),
     url(r'^frontend-static/(?P<rest_of_path>.*)', views.frontend_static_redirect, name='frontend-static-files'),
+    url(r'^sockjs-node/(?P<rest_of_path>.*)', views.sockjs_node_redirect, name='sockjs-node'),
 ]

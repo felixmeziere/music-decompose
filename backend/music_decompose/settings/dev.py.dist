@@ -10,6 +10,7 @@ from .base import * # pylint: disable=W0401
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
 
 BASE_URL = 'http://localhost:8000'
+FRONTEND_PATH = 'http://localhost:3000'
 
 DATABASES = {
     'default': {

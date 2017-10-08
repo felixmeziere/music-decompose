@@ -1,0 +1,10 @@
+{
+    "python.linting.enabled": true,
+    "python.linting.pylintEnabled": true,
+    "files.trimTrailingWhitespace": true,
+    "files.insertFinalNewline": true,
+    "python.pythonPath": "${workspaceRoot}/venv/bin/python3",
+    "eslint.workingDirectories": [
+        "${workspaceRoot}/frontend"
+    ]
+}

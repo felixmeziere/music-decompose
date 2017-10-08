@@ -125,3 +125,7 @@ REST_FRAMEWORK = {
         'rest_framework.renderers.JSONRenderer',
     ),
 }
+
+CORS_ORIGIN_WHITELIST = (
+    'localhost:8080',
+)

@@ -1,6 +1,5 @@
-'use strict';
-
-const fs = require('fs');
+/* eslint-disable */
+const fs = require('fs'); // eslint-disable-line
 const path = require('path');
 const paths = require('./paths');
 

@@ -1,15 +1,15 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
+import renderer from 'react-test-renderer';
 import HomePage from './HomePage';
 
 it('renders without crashing', () => {
-  const div = document.createElement('div');
-  ReactDOM.render(
-    <HomePage
-      loading={false}
-      errorMessage="There is an error."
-      message="Totor Panache"
-    />,
-    div,
-  );
+  const component = renderer.create(<HomePage
+    loading={false}
+    errorMessage="There is an error."
+    message="Totor Panache"
+    uploadSong={() => {}}
+    setUploadSongField={() => {}}
+  />);
+  const tree = component.toJSON();
+  expect(tree).toMatchSnapshot();
 });

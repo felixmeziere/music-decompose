@@ -1,0 +1,36 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`renders without crashing 1`] = `
+<div>
+  <div>
+    Error Message:
+  </div>
+  <div>
+    There is an error.
+  </div>
+  <div>
+    Message:
+  </div>
+  <div>
+    Totor Panache
+  </div>
+  <div>
+    Loading?
+  </div>
+  <div>
+    No
+  </div>
+  <form
+    onSubmit={[Function]}
+  >
+    <input
+      onChange={[Function]}
+      type="text"
+    />
+    <input
+      type="submit"
+    />
+  </form>
+  <submit />
+</div>
+`;

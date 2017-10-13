@@ -17,7 +17,6 @@ from django.conf.urls import url, include
 from django.contrib import admin
 from music_decompose import views
 from rest_framework import routers
-from django.views.decorators.csrf import csrf_exempt
 from song.views import SongViewSet
 
 router = routers.DefaultRouter()

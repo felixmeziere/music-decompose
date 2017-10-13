@@ -16,11 +16,20 @@ Including another URLconf
 from django.conf.urls import url, include
 from django.contrib import admin
 from music_decompose import views
+from rest_framework import routers
+from django.views.decorators.csrf import csrf_exempt
+from song.views import SongViewSet
+
+router = routers.DefaultRouter()
+router.register(r'song', SongViewSet)
 
 urlpatterns = [
+    # Architecture
     url(r'^admin/', admin.site.urls),
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     url(r'^$', views.app, name='app'),
     url(r'^frontend-static/(?P<rest_of_path>.*)', views.frontend_static_redirect, name='frontend-static-files'),
     url(r'^sockjs-node/(?P<rest_of_path>.*)', views.sockjs_node_redirect, name='sockjs-node'),
+    # Features
+    url(r'^', include(router.urls)),
 ]

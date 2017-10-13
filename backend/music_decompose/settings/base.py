@@ -39,7 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'input',
+    'song',
 ]
 
 MIDDLEWARE = [
@@ -128,4 +128,6 @@ REST_FRAMEWORK = {
 
 CORS_ORIGIN_WHITELIST = (
     'localhost:8080',
+    'localhost:8000',
+    'localhost:3000',
 )

@@ -14,13 +14,15 @@ Including another URLconf
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
 from django.conf.urls import url, include
+from django.conf.urls.static import static
+from django.conf import settings
 from django.contrib import admin
 from music_decompose import views
 from rest_framework import routers
-from song.views import SongViewSet
+from song.views import AddSongViewSet
 
 router = routers.DefaultRouter()
-router.register(r'song', SongViewSet)
+router.register(r'song', AddSongViewSet)
 
 urlpatterns = [
     # Architecture
@@ -31,4 +33,4 @@ urlpatterns = [
     url(r'^sockjs-node/(?P<rest_of_path>.*)', views.sockjs_node_redirect, name='sockjs-node'),
     # Features
     url(r'^', include(router.urls)),
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

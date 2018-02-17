@@ -7,7 +7,6 @@ it('renders without crashing', () => {
     loading={false}
     errorMessage="There is an error."
     message="Totor Panache"
-    uploadSong={() => {}}
     setUploadSongField={() => {}}
   />);
   const tree = component.toJSON();

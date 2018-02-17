@@ -1,5 +1,5 @@
-import callUploadSong from './callUploadSong';
+import { callAddSong } from './uploadSongApi';
 
 export {
-  callUploadSong,
+  callAddSong,
 };

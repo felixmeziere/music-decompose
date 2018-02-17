@@ -7,3 +7,4 @@ env
 backend/static
 *.log
 dev.py
+*.wav

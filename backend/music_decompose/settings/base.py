@@ -23,7 +23,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = '+iqbbn-o&qs1x%dea8d@u*#f-vbe%auup!zefv@elt3cyf9u@+'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = []
 
@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'song',
+    'audiofield',
 ]
 
 MIDDLEWARE = [
@@ -50,6 +51,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'audiofield.middleware.threadlocals.ThreadLocals',
 ]
 
 ROOT_URLCONF = 'music_decompose.urls'
@@ -131,3 +133,16 @@ CORS_ORIGIN_WHITELIST = (
     'localhost:8000',
     'localhost:3000',
 )
+
+UPLOADED_FILES_USE_URL = False
+
+# Media settings
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MAX_UPLOAD_SIZE = 229916160
+DATA_UPLOAD_MAX_MEMORY_SIZE = 229916160
+
+# Audiofields settings
+CHANNEL_TYPE_VALUE = 0
+FREQ_TYPE_VALUE = 0
+CONVERT_TYPE_VALUE = 0

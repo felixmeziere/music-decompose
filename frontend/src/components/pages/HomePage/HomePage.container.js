@@ -1,16 +1,22 @@
 import { connect } from 'react-redux';
-import { uploadSong, setUploadSongField } from 'redux/actions/uploadSong';
+import {
+  addSong,
+  setSongUploadField,
+} from 'redux/actions/songUpload';
 import HomePage from './HomePage';
 
-const mapStateToProps = ({ status }) => ({
+const mapStateToProps = ({ status, songUpload }) => ({
   loading: status.loading,
-  errorMessage: status.errors.uploadSong,
+  errorMessage: status.errors.songUpload,
   message: status.message,
+  title: songUpload.title,
+  songFile: songUpload.file,
+  songUUID: songUpload.songUUID,
 });
 
 const mapDispatchToProps = {
-  uploadSong,
-  setUploadSongField,
+  addSong,
+  setSongUploadField,
 };
 
 export default connect(

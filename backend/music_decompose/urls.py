@@ -19,10 +19,10 @@ from django.conf.urls.static import static
 from django.conf import settings
 from django.contrib import admin
 from music_decompose import views
-from song.views import AddSongViewSet
+from song.views import SongViewSet
 
 ROUTER = routers.DefaultRouter()
-ROUTER.register(r'song', AddSongViewSet)
+ROUTER.register(r'song', SongViewSet)
 
 urlpatterns = [ #pylint: disable=C0103
     # Architecture

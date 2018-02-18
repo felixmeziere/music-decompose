@@ -1,2 +1,2 @@
 #!/bin/sh
-./pylint.sh && python backend/manage.py test
+./backend/pylint.sh && python backend/manage.py test

@@ -1,3 +1,5 @@
+# pylint: skip-file
+
 """
 Django settings for backend project.
 

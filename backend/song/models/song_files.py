@@ -3,9 +3,9 @@
 """
 import uuid
 from django.db import models
-from audiofield.fields import AudioField
 from django.conf import settings
 from django.utils.html import format_html
+from audiofield.fields import AudioField
 from .song import Song
 
 class SongFiles(models.Model):
@@ -16,9 +16,9 @@ class SongFiles(models.Model):
         primary_key=True, default=uuid.uuid4, editable=False)
     added_at = models.DateTimeField(auto_now_add=True)
     original_file = AudioField(upload_to='original_songs/',
-                        blank=True,
-                        ext_whitelist=('.wav'),
-                        help_text=('Allowed type: .wav'))
+                               blank=True,
+                               ext_whitelist=('.wav'),
+                               help_text=('Allowed type: .wav'))
     song = models.OneToOneField(
         Song,
         on_delete=models.CASCADE,
@@ -32,7 +32,10 @@ class SongFiles(models.Model):
         """
         if self.original_file:
             file_url = settings.MEDIA_URL + str(self.original_file)
-            player_string = format_html('<audio src="%s" controls>Your browser does not support the audio element.</audio>' % (file_url))
+            player_string = format_html(
+                '<audio src="%s" controls>Your browser does\
+                 not support the audio element.</audio>' % (file_url)
+            )
             return player_string
 
     audio_file_player.allow_tags = True

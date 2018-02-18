@@ -21,16 +21,20 @@ from music_decompose import views
 from rest_framework import routers
 from song.views import AddSongViewSet
 
-router = routers.DefaultRouter()
-router.register(r'song', AddSongViewSet)
+ROUTER = routers.DefaultRouter()
+ROUTER.register(r'song', AddSongViewSet)
 
-urlpatterns = [
+urlpatterns = [ #pylint: disable=C0103
     # Architecture
     url(r'^admin/', admin.site.urls),
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     url(r'^$', views.app, name='app'),
-    url(r'^frontend-static/(?P<rest_of_path>.*)', views.frontend_static_redirect, name='frontend-static-files'),
+    url(
+        r'^frontend-static/(?P<rest_of_path>.*)',
+        views.frontend_static_redirect,
+        name='frontend-static-files'
+    ),
     url(r'^sockjs-node/(?P<rest_of_path>.*)', views.sockjs_node_redirect, name='sockjs-node'),
     # Features
-    url(r'^', include(router.urls)),
+    url(r'^', include(ROUTER.urls)),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

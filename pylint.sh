@@ -1,2 +1,2 @@
 #!/bin/sh
-pylint ./backend --load-plugins pylint_django
+pylint ./backend '--msg-template={line}: {msg_id}({symbol}) {msg}'

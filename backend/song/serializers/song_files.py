@@ -14,7 +14,7 @@ class SongFilesSerializer(serializers.ModelSerializer):
 
     class Meta:
         """
-            Django Meta class
+            Django Meta Class
         """
         model = SongFiles
         fields = (
@@ -25,8 +25,8 @@ class SongFilesSerializer(serializers.ModelSerializer):
         )
 
         read_only_fields = (
-            'uuid',
             'added_at',
+            'uuid',
         )
 
 

@@ -29,12 +29,6 @@ class SongSerializer(serializers.ModelSerializer):
 
     files = SongFilesSerializer(partial=True, required=False)
 
-    def validate_files(self, value):
-        return value
-
-    def validate(self, data):
-        return data
-
     def create(self, validated_data):
         file_data = self.initial_data['file']
         instance = super(SongSerializer, self).create(validated_data)

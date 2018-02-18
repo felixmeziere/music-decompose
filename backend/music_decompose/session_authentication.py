@@ -1,3 +1,7 @@
+"""
+CSRF config
+"""
+
 from rest_framework.authentication import SessionAuthentication
 
 

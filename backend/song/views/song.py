@@ -2,9 +2,9 @@
 """
 Views for the Songs
 """
+from rest_framework import viewsets, mixins
 from song.models import Song
 from song.serializers import SongSerializer
-from rest_framework import viewsets, mixins
 class AddSongViewSet(mixins.CreateModelMixin,
                      viewsets.GenericViewSet):
     """

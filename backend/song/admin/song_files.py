@@ -6,6 +6,7 @@ from django.contrib import admin
 from django.urls import reverse
 from django.utils.html import format_html
 from song.models import SongFiles
+from song.services import audio_file_player
 
 @admin.register(SongFiles)
 class SongFilesAdmin(admin.ModelAdmin):
@@ -15,10 +16,10 @@ class SongFilesAdmin(admin.ModelAdmin):
     fields = (
         '__str__',
         'uuid',
-        'original_file',
         'added_at',
+        'original_file',
         'pretty_song',
-        'audio_file_player',
+        'original_file_player',
     )
 
     readonly_fields = (
@@ -27,14 +28,14 @@ class SongFilesAdmin(admin.ModelAdmin):
         'original_file',
         'pretty_song',
         'uuid',
-        'audio_file_player',
+        'original_file_player',
     )
 
     list_display = (
         '__str__',
         'pretty_song',
         'original_file',
-        'audio_file_player',
+        'original_file_player',
         'added_at',
     )
     actions = ['custom_delete_selected']
@@ -75,3 +76,12 @@ class SongFilesAdmin(admin.ModelAdmin):
                         args=(obj.song.uuid if obj.song else None,))
         )
     pretty_song.short_description = 'Song'
+
+    def original_file_player(self, obj): #pylint: disable=R0201
+        """
+            Audio player for original file
+        """
+        return audio_file_player(obj.original_file)
+
+    original_file_player.allow_tags = True
+    original_file_player.short_description = ('Original file player')

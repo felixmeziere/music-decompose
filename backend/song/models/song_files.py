@@ -3,8 +3,6 @@
 """
 import uuid
 from django.db import models
-from django.conf import settings
-from django.utils.html import format_html
 from audiofield.fields import AudioField
 from .song import Song
 
@@ -25,21 +23,6 @@ class SongFiles(models.Model):
         blank=True,
         related_name='files',
     )
-
-    def audio_file_player(self):
-        """
-            Audio player tag for admin
-        """
-        if self.original_file:
-            file_url = settings.MEDIA_URL + str(self.original_file)
-            player_string = format_html(
-                '<audio src="%s" controls>Your browser does\
-                 not support the audio element.</audio>' % (file_url)
-            )
-            return player_string
-
-    audio_file_player.allow_tags = True
-    audio_file_player.short_description = ('Audio file player')
 
 
     class Meta:

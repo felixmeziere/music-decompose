@@ -1,4 +1,4 @@
 """
     Export song views
 """
-from .song import AddSongViewSet
+from .song import SongViewSet

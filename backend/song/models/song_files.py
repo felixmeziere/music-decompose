@@ -1,5 +1,5 @@
 """
-    Defines the song model.
+    Model to wrap all Audio Files for a song
 """
 import uuid
 from django.db import models

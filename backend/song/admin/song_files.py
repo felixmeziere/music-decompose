@@ -3,10 +3,8 @@
 """
 import os
 from django.contrib import admin
-from django.urls import reverse
-from django.utils.html import format_html
 from song.models import SongFiles
-from song.services import audio_file_player
+from music_decompose.services import audio_file_player, get_link_to_modeladmin
 
 @admin.register(SongFiles)
 class SongFilesAdmin(admin.ModelAdmin):
@@ -36,13 +34,12 @@ class SongFilesAdmin(admin.ModelAdmin):
         'pretty_song',
         'original_file',
         'original_file_player',
-        'added_at',
     )
     actions = ['custom_delete_selected']
 
     list_display_links = ['__str__']
 
-    ordering = ('-added_at',)
+    ordering = ('song', '-added_at',)
 
     def get_actions(self, request):
         """
@@ -70,11 +67,7 @@ class SongFilesAdmin(admin.ModelAdmin):
         """
         Link to song object
         """
-        return format_html(
-            "<a href='{url}'>" + str(obj.song) + "</a>",
-            url=reverse('admin:song_song_change',
-                        args=(obj.song.uuid if obj.song else None,))
-        )
+        return get_link_to_modeladmin(str(obj.song), 'song', 'song', obj.song.uuid)
     pretty_song.short_description = 'Song'
 
     def original_file_player(self, obj): #pylint: disable=R0201

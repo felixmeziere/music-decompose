@@ -27,4 +27,5 @@ CUSTOM_BUNDLE_URL = 'http://localhost:3000/frontend-static/bundle.js'
 
 STATICFILES_DIRS = [
     '/absolute/path/to/your/frontend/public',
+    '/absolute/path/to/your/static',
 ]

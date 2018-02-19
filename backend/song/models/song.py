@@ -1,5 +1,5 @@
 """
-    Defines the song model.
+    Defines the Song model.
 """
 import uuid
 from django.db import models

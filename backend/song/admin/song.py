@@ -2,9 +2,9 @@
     Admin for Song model.
 """
 from django.contrib import admin
-from django.urls import reverse
-from django.utils.html import format_html
 from song.models import Song
+from segmentation.models import SegmentList
+from music_decompose.services import audio_file_player, get_link_to_modeladmin, NoDeleteAdminMixin, NoAddAdminMixin
 
 def estimate_tempo(modeladmin, response, queryset): #pylint: disable=W0613
     """
@@ -13,6 +13,21 @@ def estimate_tempo(modeladmin, response, queryset): #pylint: disable=W0613
     for song in queryset:
         song.estimate_tempo()
 estimate_tempo.short_description = 'Estimate Tempo'
+
+class SegmentListInline(NoDeleteAdminMixin, NoAddAdminMixin, admin.TabularInline):
+    """
+    Segment Admin
+    """
+    model = SegmentList
+    fields = (
+        'method',
+    )
+    readonly_fields = (
+        'method',
+    )
+    ordering = ('method',)
+    show_change_link = True
+
 
 @admin.register(Song)
 class SongAdmin(admin.ModelAdmin):
@@ -36,7 +51,6 @@ class SongAdmin(admin.ModelAdmin):
     list_display = (
         'title',
         'pretty_files',
-        'added_at',
         'tempo',
     )
 
@@ -48,11 +62,8 @@ class SongAdmin(admin.ModelAdmin):
         """
         Files object
         """
-        return format_html(
-            "<a href='{url}'>Go to files</a>",
-            url=reverse('admin:song_songfiles_change',
-                        args=(obj.files.uuid,))
-        )
+        return get_link_to_modeladmin('Go to files', 'song', 'songfiles', obj.files.uuid)
     pretty_files.short_description = 'Files'
 
     ordering = ('-added_at',)
+    inlines = (SegmentListInline,)

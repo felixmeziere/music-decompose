@@ -6,6 +6,14 @@ from segmentation.models import SegmentList, Segment
 from music_decompose.services import get_link_to_modeladmin
 from music_decompose.services import audio_file_player, NoDeleteAdminMixin, NoAddAdminMixin
 
+def create_segments(modeladmin, response, queryset): #pylint: disable=W0613
+    """
+    Action to create the segments for song
+    """
+    for segmentList in queryset:
+        segmentList.create_segments()
+create_segments.short_description = 'Create Segments'
+
 class SegmentInline(NoDeleteAdminMixin, NoAddAdminMixin, admin.TabularInline):
     """
     Segment Admin
@@ -52,24 +60,28 @@ class SegmentListAdmin(admin.ModelAdmin):
         css = {
             'all': ('css/hide_admin_original.css', )     # Include extra css
         }
+    ordering = ('song', '-added_at',)
+    inlines = (SegmentInline,)
+    actions = (create_segments,)
     fields = (
         'uuid',
         'added_at',
         'pretty_song',
         'method',
+        'segmentation_status',
     )
-
     readonly_fields = (
         'uuid',
         'added_at',
         'pretty_song',
         'method',
+        'segmentation_status',
     )
-
     list_display = (
         'uuid',
         'pretty_song',
         'method',
+        'segmentation_status',
     )
 
     def pretty_song(self, obj): #pylint: disable=R0201
@@ -79,6 +91,3 @@ class SegmentListAdmin(admin.ModelAdmin):
         return get_link_to_modeladmin(str(obj.song), 'song', 'song', obj.song.uuid)
     pretty_song.short_description = 'Song'
 
-    ordering = ('song', '-added_at',)
-
-    inlines = (SegmentInline,)

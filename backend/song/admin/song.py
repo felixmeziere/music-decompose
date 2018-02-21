@@ -54,7 +54,7 @@ class SongAdmin(admin.ModelAdmin):
         'tempo',
     )
 
-    actions = [estimate_tempo]
+    actions = (estimate_tempo,)
 
     list_display_links = ['title']
 

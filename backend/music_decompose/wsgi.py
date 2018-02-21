@@ -11,6 +11,6 @@ import os
 
 from django.core.wsgi import get_wsgi_application
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "music_decompose.settings")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "music_decompose.settings.dev")
 
 application = get_wsgi_application() #pylint: disable=E0012 #pylint: disable=C0103

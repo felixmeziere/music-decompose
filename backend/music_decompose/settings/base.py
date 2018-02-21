@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'audiofield',
+    'django_celery_results',
     'song',
     'segmentation',
 ]
@@ -80,6 +81,8 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'music_decompose.wsgi.application'
 
+CELERY_RESULT_BACKEND = 'django-db'
+CELERY_BROKER_URL = 'amqp://localhost'
 
 # Password validation
 # https://docs.djangoproject.com/en/1.11/ref/settings/#auth-password-validators

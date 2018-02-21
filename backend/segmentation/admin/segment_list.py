@@ -25,8 +25,6 @@ class SegmentInline(NoDeleteAdminMixin, NoAddAdminMixin, admin.TabularInline):
         'audio_file',
         'audio_file_player',
     )
-    class Media:
-        css = { "all" : ("css/hide_admin_original.css",) }
 
     def pretty_positions(self, obj):
         """
@@ -50,21 +48,28 @@ class SegmentListAdmin(admin.ModelAdmin):
     """
         Admin for Song model.
     """
+    class Media:
+        css = {
+            'all': ('css/hide_admin_original.css', )     # Include extra css
+        }
     fields = (
         'uuid',
         'added_at',
         'pretty_song',
+        'method',
     )
 
     readonly_fields = (
         'uuid',
         'added_at',
         'pretty_song',
+        'method',
     )
 
     list_display = (
         'uuid',
         'pretty_song',
+        'method',
     )
 
     def pretty_song(self, obj): #pylint: disable=R0201

@@ -8,3 +8,4 @@ backend/static
 *.log
 dev.py
 *.wav
+*static

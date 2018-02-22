@@ -4,6 +4,7 @@
 import uuid
 from django.db import models
 from song.services import estimate_tempo
+import re
 
 class Song(models.Model):
     """
@@ -24,3 +25,7 @@ class Song(models.Model):
         """
         self.tempo = estimate_tempo(self.files.original_file.path)
         self.save()
+
+    @property
+    def sanitized_name(self):
+        return re.sub(r'[^a-zA-Z0-9]', '', self.title)

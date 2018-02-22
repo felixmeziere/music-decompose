@@ -9,3 +9,4 @@ backend/static
 dev.py
 *.wav
 *static
+*backend/music_decompose/media

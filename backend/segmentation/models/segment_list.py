@@ -17,6 +17,9 @@ SEGMENTATION_STATUS_CHOICES = (
     ('done', 'Done'),
 )
 
+def get_upload_path(instance, _):
+    return instance.folder_name
+
 class SegmentList(models.Model):
     """
         Contains all the segments for a song and specific methods to handle them
@@ -28,6 +31,7 @@ class SegmentList(models.Model):
     song = models.ForeignKey(Song, on_delete=models.CASCADE, related_name='segment_lists')
     method = models.CharField(max_length=10, choices=SEGMENTATION_METHOD_CHOICES)
     segmentation_status = models.CharField(max_length=15, choices=SEGMENTATION_STATUS_CHOICES, default='not_started')
+    data_path = models.CharField(max_length=500, null=True)
 
     def __str__(self):
         return 'Segment List for Song: {0} with {1} method'.format(str(self.song), self.method)
@@ -38,13 +42,10 @@ class SegmentList(models.Model):
         """
         unique_together = ('song', 'method',)
 
-    def create_segments(self):
+    @property
+    def folder_name(self):
         """
-        Compute the segmentation and create the segments for self.song
+        Folder where all this segmentLists'-related files will be
         """
-        self.segmentation_status = 'pending'
-        self.save()
-        import time
-        time.sleep(5)
-        self.segmentation_status = 'done'
-        self.save()
+        return '{0}/segmentation/{1}'.format(self.song.sanitized_name, self.method)
+

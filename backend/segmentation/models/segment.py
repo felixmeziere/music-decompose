@@ -25,14 +25,3 @@ class Segment(models.Model):
 
     class Meta:
         unique_together = ('index', 'segment_list',)
-# segments = []
-# for index in range(30):
-#     segments.append(
-#         Segment(
-#             index=index,
-#             segment_list=sl,
-#             length_in_samples=3000,
-#             start_position_in_song=3000 * index,
-#             end_position_in_song=3000 * (index + 1),
-#         )
-#     )

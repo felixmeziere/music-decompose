@@ -3,15 +3,16 @@
 """
 from django.contrib import admin
 from segmentation.models import SegmentList, Segment
+from segmentation.tasks import compute_segmentation
 from music_decompose.services import get_link_to_modeladmin
 from music_decompose.services import audio_file_player, NoDeleteAdminMixin, NoAddAdminMixin
 
 def create_segments(modeladmin, response, queryset): #pylint: disable=W0613
     """
-    Action to create the segments for song
+    Action to create the segments for selected songs
     """
     for segmentList in queryset:
-        segmentList.create_segments()
+        compute_segmentation.delay(segmentList.uuid)
 create_segments.short_description = 'Create Segments'
 
 class SegmentInline(NoDeleteAdminMixin, NoAddAdminMixin, admin.TabularInline):
@@ -69,6 +70,7 @@ class SegmentListAdmin(admin.ModelAdmin):
         'pretty_song',
         'method',
         'segmentation_status',
+        'data_path',
     )
     readonly_fields = (
         'uuid',
@@ -76,6 +78,7 @@ class SegmentListAdmin(admin.ModelAdmin):
         'pretty_song',
         'method',
         'segmentation_status',
+        'data_path',
     )
     list_display = (
         'uuid',

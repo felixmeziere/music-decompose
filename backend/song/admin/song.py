@@ -14,6 +14,17 @@ def estimate_tempo(modeladmin, response, queryset): #pylint: disable=W0613
         song.estimate_tempo()
 estimate_tempo.short_description = 'Estimate Tempo'
 
+def create_blind_segment_list(modeladmin, response, queryset): #pylint: disable=W0613
+    """
+    Action to start the segmentation of the song
+    """
+    for song in queryset:
+        SegmentList.objects.create(
+            song=song,
+            method='blind',
+        )
+create_blind_segment_list.short_description = 'Create Segment List with method blind'
+
 class SegmentListInline(NoDeleteAdminMixin, NoAddAdminMixin, admin.TabularInline):
     """
     Segment Admin
@@ -54,7 +65,7 @@ class SongAdmin(admin.ModelAdmin):
         'tempo',
     )
 
-    actions = (estimate_tempo,)
+    actions = (estimate_tempo, create_blind_segment_list)
 
     list_display_links = ['title']
 

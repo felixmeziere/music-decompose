@@ -5,9 +5,12 @@ import uuid
 from django.db import models
 from audiofield.fields import AudioField
 from .song import Song
+from music_decompose.services import create_directory_if_needed
 
 def get_upload_path(instance, _):
-    return '{0}/original_song'.format(instance.song.sanitized_name)
+    directory = '{0}/original_song'.format(instance.song.sanitized_name)
+    create_directory_if_needed(directory)
+    return directory
 
 class SongFiles(models.Model):
     """

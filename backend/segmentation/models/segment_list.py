@@ -5,6 +5,8 @@ import uuid
 from django.db import models
 from song.models import Song
 import numpy as np
+import soundfile as sf
+import os
 
 SEGMENTATION_METHOD_CHOICES = (
     ('blind', 'Blind'),
@@ -14,6 +16,7 @@ SEGMENTATION_METHOD_CHOICES = (
 SEGMENTATION_STATUS_CHOICES = (
     ('not_started', 'Not started'),
     ('pending', 'Pending...'),
+    ('failed', 'Failed'),
     ('done', 'Done'),
 )
 
@@ -43,9 +46,17 @@ class SegmentList(models.Model):
         unique_together = ('song', 'method',)
 
     @property
-    def folder_name(self):
+    def media_folder_name(self):
         """
         Folder where all this segmentLists'-related files will be
+        Relative path from /media
         """
         return '{0}/segmentation/{1}'.format(self.song.sanitized_name, self.method)
 
+    @property
+    def absolute_folder_name(self):
+        """
+        Folder where all this segmentLists'-related files will be
+        Absolute path from root of project
+        """
+        return 'music_decompose/media/{0}'.format(self.media_folder_name)

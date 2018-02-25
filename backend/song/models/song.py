@@ -15,6 +15,7 @@ class Song(models.Model):
     added_at = models.DateTimeField(auto_now_add=True)
     title = models.CharField(max_length=200)
     tempo = models.FloatField(null=True, blank=True)
+    sample_rate = models.PositiveIntegerField(blank=True, default=44100)
 
     def __str__(self):
         return '{0}'.format(self.title)

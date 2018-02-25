@@ -3,7 +3,7 @@
 """
 from django.contrib import admin
 from segmentation.models import SegmentList, Segment
-from segmentation.tasks import compute_segmentation
+from segmentation.tasks import asynch_compute_segmentation
 from music_decompose.services import get_link_to_modeladmin
 from music_decompose.services import audio_file_player, NoDeleteAdminMixin, NoAddAdminMixin
 
@@ -12,7 +12,7 @@ def create_segments(modeladmin, response, queryset): #pylint: disable=W0613
     Action to create the segments for selected songs
     """
     for segmentList in queryset:
-        compute_segmentation.delay(segmentList.uuid)
+        asynch_compute_segmentation.delay(segmentList.uuid)
 create_segments.short_description = 'Create Segments'
 
 class SegmentInline(NoDeleteAdminMixin, NoAddAdminMixin, admin.TabularInline):
@@ -21,14 +21,14 @@ class SegmentInline(NoDeleteAdminMixin, NoAddAdminMixin, admin.TabularInline):
     """
     model = Segment
     fields = (
-        'index',
+        'segment_index',
         'length_in_samples',
         'pretty_positions',
         'audio_file',
         'audio_file_player',
     )
     readonly_fields = (
-        'index',
+        'segment_index',
         'length_in_samples',
         'pretty_positions',
         'audio_file',
@@ -48,7 +48,7 @@ class SegmentInline(NoDeleteAdminMixin, NoAddAdminMixin, admin.TabularInline):
         return audio_file_player(obj.audio_file)
 
     pretty_positions.short_description = 'Limits in Samples'
-    ordering = ('index',)
+    ordering = ('segment_index',)
     show_change_link = True
 
 

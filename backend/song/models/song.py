@@ -5,6 +5,7 @@ import uuid
 from django.db import models
 from song.services import estimate_tempo
 import re
+import librosa as lr
 
 class Song(models.Model):
     """
@@ -30,3 +31,7 @@ class Song(models.Model):
     @property
     def sanitized_name(self):
         return re.sub(r'[^a-zA-Z0-9]', '', self.title)
+
+    @property
+    def WF(self):
+        return lr.load(self.files.original_file.path, self.sample_rate)

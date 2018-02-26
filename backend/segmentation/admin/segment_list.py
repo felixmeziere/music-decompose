@@ -39,7 +39,7 @@ class SegmentInline(NoDeleteAdminMixin, NoAddAdminMixin, admin.TabularInline):
         """
         Displays nicely
         """
-        return [obj.start_position_in_samples, obj.end_position_in_samples]
+        return '[{0}, {1}['.format(str(obj.start_position_in_samples), str(obj.end_position_in_samples))
 
     def audio_file_player(self, obj): #pylint: disable=R0201
         """
@@ -69,6 +69,7 @@ class SegmentListAdmin(admin.ModelAdmin):
         'added_at',
         'pretty_song',
         'method',
+        'n_tempo_lags_per_segment',
         'segmentation_status',
         'data_path',
     )
@@ -77,6 +78,7 @@ class SegmentListAdmin(admin.ModelAdmin):
         'added_at',
         'pretty_song',
         'method',
+        'n_tempo_lags_per_segment',
         'segmentation_status',
         'data_path',
     )
@@ -84,6 +86,7 @@ class SegmentListAdmin(admin.ModelAdmin):
         'uuid',
         'pretty_song',
         'method',
+        'n_tempo_lags_per_segment',
         'segmentation_status',
     )
 

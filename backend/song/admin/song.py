@@ -32,9 +32,11 @@ class SegmentListInline(NoDeleteAdminMixin, NoAddAdminMixin, admin.TabularInline
     model = SegmentList
     fields = (
         'method',
+        'n_tempo_lags_per_segment',
     )
     readonly_fields = (
         'method',
+        'n_tempo_lags_per_segment',
     )
     ordering = ('method',)
     show_change_link = True

@@ -15,10 +15,3 @@ def remove_audio_file_pre_delete(sender, instance, using, **kwargs):
     if instance.audio_file:
         if os.path.isfile(instance.audio_file.path):
             os.remove(instance.audio_file.path)
-
-
-@receiver(pre_save, sender=Segment)
-def segment_create_audio_file_pre_save(sender, instance, **kwargs):
-    if settings.SAVE_SEGMENTATION_FILES:
-        if not instance.audio_file:
-            instance.write_audio_file()

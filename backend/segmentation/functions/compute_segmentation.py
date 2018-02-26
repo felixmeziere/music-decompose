@@ -6,6 +6,7 @@ import numpy as np
 import os
 
 def compute_segmentation(segment_list_uuid):
+    ### Initialise
     segment_list = SegmentList.objects.get(pk=segment_list_uuid)
     segment_list.segmentation_status = 'pending'
     segment_list.save()
@@ -15,35 +16,22 @@ def compute_segmentation(segment_list_uuid):
 
 
         ### Detect segment limits
-        segment_limits_IS = [i * 60000 for i in range(200)]
+        if segment_list.method == 'blind':
+            n_samples_per_tempo_lag = int((segment_list.song.sample_rate * 60) / segment_list.song.tempo)
+            n_samples_per_segment = n_samples_per_tempo_lag * segment_list.n_tempo_lags_per_segment
+            n_segments = int(len(song_WF) / n_samples_per_segment) + 1
+            segment_starts_IS = np.zeros(n_segments)
+            segment_starts_IS = [i * n_samples_per_tempo_lag * 8 for i in range(n_segments)]
 
 
         ### Save data
-        segment_WFs = []
-        for i in range(len(segment_limits_IS)-1):
-            segment_WF = song_WF[segment_limits_IS[i]:segment_limits_IS[i+1]]
-            segment_WFs.append(segment_WF)
+        segment_list.segment_starts_IS = segment_starts_IS
+        segment_list.create_segment_WFs(song_WF)
+        segment_list.dump_data()
+        segment_list.create_segments()
+        segment_list.save()
 
-        segment_list.segments.all().delete()
-        segments = []
-        for i, segment_WF in enumerate(segment_WFs):
-            segment = Segment(
-                segment_index=i,
-                segment_list=segment_list,
-                length_in_samples=len(segment_WF),
-                start_position_in_samples=segment_limits_IS[i],
-                end_position_in_samples=segment_limits_IS[i+1],
-                WF=segment_WF,
-            )
-            segment.write_audio_file()
-            segments.append(segment)
-        Segment.objects.bulk_create(segments)
-
-        with h5py.File('{0}/segmentation_{1}.hdf5'.format(segment_list.absolute_folder_name, segment_list.song.sanitized_name), 'w') as f:
-            f.create_dataset('segment_limits_IS', (len(segment_limits_IS),), dtype='i', data=segment_limits_IS)
-            f.create_dataset('segment_WFs', (len(segment_WFs), len(segment_WFs[0])), dtype='f', data=np.array(segment_WFs))
-            segment_list.data_path = f.filename
-
+        ### End
         segment_list.segmentation_status = 'done'
         segment_list.save()
     except Exception as e:

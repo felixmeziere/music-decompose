@@ -29,7 +29,7 @@ def write_WF(WF, file_name, sample_rate):
     sf.write(file_name, WF, sample_rate)
 
 
-def write_WFs(folder, filename_prefix='', indices=None, WFs=None, extension=settings.AUDIO_WRITE_EXTENSION, sample_rate=settings.DEFAULT_SAMPLE_RATE):
+def write_WFs(folder, filename_prefix='', indices=None, WFs=None, extension=settings.HEAVY_AUDIO_WRITE_EXTENSION, sample_rate=settings.DEFAULT_SAMPLE_RATE):
     """
     Save a list of WFs or np Array of WFs to a folder, with the specified indices and
     filename prefix. Use specified format.

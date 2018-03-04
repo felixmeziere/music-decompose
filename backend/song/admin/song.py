@@ -3,42 +3,50 @@
 """
 from django.contrib import admin
 from song.models import Song
-from segmentation.models import SegmentList
-from music_decompose.services import audio_file_player, get_link_to_modeladmin, NoDeleteAdminMixin, NoAddAdminMixin
+from song.tasks import asynch_compute_tempo_for_song
+from segmentation.models import Segmenter
+from music_decompose.services import audio_file_player, NoAddAdminMixin
 
-def estimate_tempo(modeladmin, response, queryset): #pylint: disable=W0613
+def compute_tempo(modeladmin, response, queryset): #pylint: disable=W0613
     """
     Action to estimate tempo for song
     """
     for song in queryset:
-        song.estimate_tempo()
-estimate_tempo.short_description = 'Estimate Tempo'
+        asynch_compute_tempo_for_song.delay(song.uuid)
+compute_tempo.short_description = 'Estimate Tempo'
 
-def create_blind_segment_list(modeladmin, response, queryset): #pylint: disable=W0613
+def create_blind_segmenter(modeladmin, response, queryset): #pylint: disable=W0613
     """
     Action to start the segmentation of the song
     """
     for song in queryset:
-        SegmentList.objects.create(
-            song=song,
-            method='blind',
-        )
-create_blind_segment_list.short_description = 'Create Segment List with method blind'
+        if song.tempo:
+            Segmenter.objects.create(
+                song=song,
+                method='blind',
+                tempo=song.tempo,
+                n_tempo_lags_per_segment=4,
+            )
+        else:
+            raise Exception('Please compute the tempo of the song before segmenting it.')
+create_blind_segmenter.short_description = 'Create Segmenter with method blind'
 
-class SegmentListInline(NoDeleteAdminMixin, NoAddAdminMixin, admin.TabularInline):
+class SegmenterInline(NoAddAdminMixin, admin.TabularInline):
     """
     Segment Admin
     """
-    model = SegmentList
+    model = Segmenter
     fields = (
         'method',
+        'tempo',
         'n_tempo_lags_per_segment',
     )
     readonly_fields = (
         'method',
+        'tempo',
         'n_tempo_lags_per_segment',
     )
-    ordering = ('method',)
+    ordering = ('method', 'tempo', 'n_tempo_lags_per_segment')
     show_change_link = True
 
 
@@ -51,32 +59,41 @@ class SongAdmin(admin.ModelAdmin):
         'uuid',
         'added_at',
         'title',
-        'pretty_files',
+        'original_file',
+        'original_song_player',
+        'tempo_estimation_status',
         'tempo',
     )
 
     readonly_fields = (
         'uuid',
-        'pretty_files',
+        'original_file',
         'added_at',
+        'original_song_player',
+        'title',
+        'tempo_estimation_status',
     )
 
     list_display = (
         'title',
-        'pretty_files',
+        'original_file',
+        'tempo_estimation_status',
         'tempo',
+        'original_song_player',
     )
 
-    actions = (estimate_tempo, create_blind_segment_list)
+    actions = (compute_tempo, create_blind_segmenter)
 
     list_display_links = ['title']
 
-    def pretty_files(self, obj): #pylint: disable=R0201
+    def original_song_player(self, obj): #pylint: disable=R0201
         """
-        Files object
+        Audio player for original file
         """
-        return get_link_to_modeladmin('Go to files', 'song', 'songfiles', obj.files.uuid)
-    pretty_files.short_description = 'Files'
+        return audio_file_player(obj.original_file)
+    original_song_player.allow_tags = True
+    original_song_player.short_description = ('Original song player')
+
 
     ordering = ('-added_at',)
-    inlines = (SegmentListInline,)
+    inlines = (SegmenterInline,)

@@ -1,14 +1,12 @@
 """
-    Serializes song metadata
+Serializes song metadata and original audio file
 """
 from rest_framework import serializers
 from song.models import Song
-from .song_files import SongFilesSerializer
-
 
 class SongSerializer(serializers.ModelSerializer):
     """
-        Serializer of the Song model
+    Serializer of the Song model
     """
     class Meta:
         """
@@ -18,7 +16,7 @@ class SongSerializer(serializers.ModelSerializer):
         fields = (
             'uuid',
             'added_at',
-            'files',
+            'original_file',
             'title',
         )
 
@@ -27,19 +25,11 @@ class SongSerializer(serializers.ModelSerializer):
             'added_at',
         )
 
-    files = SongFilesSerializer(partial=True, required=False)
-
     def create(self, validated_data):
-        file_data = self.initial_data['file']
+        """
+        Customise create to dump song waveform to file
+        """
         instance = super(SongSerializer, self).create(validated_data)
-
-        if file_data is not None:
-            data = {
-                'file': file_data,
-                'song': instance,
-            }
-            serializer = SongFilesSerializer(data=data)
-            serializer.is_valid()
-            serializer.create(data)
-
+        instance.import_song_WF()
+        instance.dump_data()
         return instance

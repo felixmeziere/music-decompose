@@ -2,4 +2,4 @@
 Exports
 """
 
-from .segment_list import SegmentListAdmin
+from .segmenter import SegmenterAdmin

@@ -2,8 +2,8 @@
     Admin for Song model.
 """
 from django.contrib import admin
-from segmentation.models import SegmentList, Segment
-from segmentation.tasks import asynch_compute_segmentation
+from segmentation.models import Segmenter, Segment
+from segmentation.tasks import asynch_compute_segmentation_for_segmenter
 from music_decompose.services import get_link_to_modeladmin
 from music_decompose.services import audio_file_player, NoDeleteAdminMixin, NoAddAdminMixin
 
@@ -12,7 +12,7 @@ def create_segments(modeladmin, response, queryset): #pylint: disable=W0613
     Action to create the segments for selected songs
     """
     for segmentList in queryset:
-        asynch_compute_segmentation.delay(segmentList.uuid)
+        asynch_compute_segmentation_for_segmenter.delay(segmentList.uuid)
 create_segments.short_description = 'Create Segments'
 
 class SegmentInline(NoDeleteAdminMixin, NoAddAdminMixin, admin.TabularInline):
@@ -35,7 +35,7 @@ class SegmentInline(NoDeleteAdminMixin, NoAddAdminMixin, admin.TabularInline):
         'audio_file_player',
     )
 
-    def pretty_positions(self, obj):
+    def pretty_positions(self, obj): #pylint: disable=R0201
         """
         Displays nicely
         """
@@ -52,8 +52,8 @@ class SegmentInline(NoDeleteAdminMixin, NoAddAdminMixin, admin.TabularInline):
     show_change_link = True
 
 
-@admin.register(SegmentList)
-class SegmentListAdmin(admin.ModelAdmin):
+@admin.register(Segmenter)
+class SegmenterAdmin(admin.ModelAdmin):
     """
         Admin for Song model.
     """
@@ -96,4 +96,3 @@ class SegmentListAdmin(admin.ModelAdmin):
         """
         return get_link_to_modeladmin(str(obj.song), 'song', 'song', obj.song.uuid)
     pretty_song.short_description = 'Song'
-

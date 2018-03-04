@@ -1,9 +1,10 @@
-from segmentation.models import SegmentList, Segment
+# pylint: skip-file
+from segmentation.models import Segmenter, Segment
 import librosa as lr
 
 
-segment_list = SegmentList.objects.first()
-song_WF, _ = lr.load(segment_list.song.files.original_file.path, 44100)
+segmenter = Segmenter.objects.first()
+song_WF, _ = lr.load(segmenter.song.original_file.path, 44100)
 segment_starts = [i * 100000 for i in range(50)]
 segment_WFs = []
 for i in range(len(segment_starts)-1):
@@ -12,7 +13,7 @@ for i in range(len(segment_starts)-1):
 
 Segment.objects.create(
     segment_index=1,
-    segment_list=segment_list,
+    segmenter=segmenter,
     length_in_samples=3,
     start_position_in_samples=3,
     end_position_in_samples=6,

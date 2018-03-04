@@ -146,7 +146,7 @@ def computeWindowBPM(data, framerate, levels):
     return bpm
 
 
-def estimate_tempo(filename):
+def compute_tempo(filename):
     """
     That should be just about it! Let's try it out!
     One optimization that I've noticed in other implementations

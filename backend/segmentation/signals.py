@@ -1,13 +1,14 @@
+"""
+Django signals for app segmentation. Allow to run code automatically on a few django lifecycle events.
+"""
 import os
-import soundfile as sf
 from django.dispatch import receiver
-from django.db.models.signals import pre_delete, pre_save
-from django.conf import settings
+from django.db.models.signals import pre_delete
 from segmentation.models import Segment
 
 
 @receiver(pre_delete, sender=Segment)
-def remove_audio_file_pre_delete(sender, instance, using, **kwargs):
+def remove_audio_file_pre_delete(sender, instance, using, **kwargs): # pylint: disable=W0613
     """
     Ensures the associated audio file is deleted
     when Segment instance is deleted

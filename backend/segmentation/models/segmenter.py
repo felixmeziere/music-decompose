@@ -1,47 +1,42 @@
 """
-    Defines the SegmentList model.
+Defines the Segmenter model.
 """
 import uuid
+import numpy as np
 from django.db import models
 from song.models import Song
 from segmentation.models import Segment
-import numpy as np
-import soundfile as sf
-import os
-import h5py
-import librosa as lr
+from music_decompose.services import load_fields_from_hdf5, save_fields_to_hdf5
+from music_decompose.constants import STATUS_CHOICES
 
 SEGMENTATION_METHOD_CHOICES = (
     ('blind', 'Blind'),
     ('flexible', 'Flexible'),
 )
 
-SEGMENTATION_STATUS_CHOICES = (
-    ('not_started', 'Not started'),
-    ('pending', 'Pending...'),
-    ('failed', 'Failed'),
-    ('done', 'Done'),
-)
-
 def get_upload_path(instance, _):
-    return instance.folder_name
-
-class SegmentList(models.Model):
     """
-        Contains all the segments for a song and specific methods to handle them
+    Get path to upload files to. Changes with the song.
+    """
+    return instance.media_folder_name
+
+class Segmenter(models.Model):
+    """
+    Contains all the segments for a song and specific methods to handle them
     """
     # DB fields
     uuid = models.UUIDField(
         primary_key=True, default=uuid.uuid4, editable=False)
     added_at = models.DateTimeField(auto_now_add=True)
-    song = models.ForeignKey(Song, on_delete=models.CASCADE, related_name='segment_lists')
+    song = models.ForeignKey(Song, on_delete=models.CASCADE, related_name='segmenters')
     method = models.CharField(max_length=10, choices=SEGMENTATION_METHOD_CHOICES)
-    n_tempo_lags_per_segment = models.PositiveSmallIntegerField(default=8)
-    segmentation_status = models.CharField(max_length=15, choices=SEGMENTATION_STATUS_CHOICES, default='not_started')
+    tempo = models.FloatField()
+    n_tempo_lags_per_segment = models.PositiveSmallIntegerField(default=4)
+    segmentation_status = models.CharField(max_length=15, choices=STATUS_CHOICES, default='not_started')
     data_path = models.CharField(max_length=500, null=True)
 
     def __str__(self):
-        return 'Segment List for Song: {0} - {1} method'.format(str(self.song), self.method)
+        return 'Segmenter for Song: {0} - {1} method'.format(str(self.song), self.method)
 
     class Meta:
         """
@@ -50,10 +45,11 @@ class SegmentList(models.Model):
         unique_together = ('song', 'method', 'n_tempo_lags_per_segment')
 
     def __init__(self, *args, segment_starts_IS=None, segment_WFs=None, **kwargs):
-        super(SegmentList, self).__init__(*args, **kwargs)
-        self.segment_starts_IS = segment_starts_IS
-        self.segment_WFs = segment_WFs
-
+        super(Segmenter, self).__init__(*args, **kwargs)
+        self._segment_starts_IS = segment_starts_IS
+        self._segment_WFs = segment_WFs
+        if not self.data_path:
+            self.data_path = '{0}/segmenter_{1}.hdf5'.format(self.absolute_folder_name, self.song.sanitized_name)
 
     @property
     def media_folder_name(self):
@@ -71,47 +67,66 @@ class SegmentList(models.Model):
         """
         return 'music_decompose/media/{0}'.format(self.media_folder_name)
 
+
+    @property
+    def segment_starts_IS(self):
+        """
+        Array with the positions of the segments starts.
+        """
+        if self._segment_starts_IS is None:
+            load_fields_from_hdf5(self, ['segment_starts_IS'])
+
+        return self._segment_starts_IS
+
+    @property
+    def segment_WFs(self):
+        """
+        Array with the waveforms of the segments as rows.
+        """
+        if self._segment_WFs is None and self.data_path is not None:
+            load_fields_from_hdf5(self, ['segment_WFs'])
+
+        return self._segment_WFs
+
     def dump_data(self):
         """
-        Dump instance data to disk and save reference in instance
+        Dump instance data to disk
         """
-        with h5py.File('{0}/segmentation_{1}.hdf5'.format(self.absolute_folder_name, self.song.sanitized_name), 'w') as data_file:
-            data_file.create_dataset('segment_starts_IS', (len(self.segment_starts_IS),), dtype='i', data=self.segment_starts_IS)
-            data_file.create_dataset('segment_WFs', (len(self.segment_WFs), len(self.segment_WFs[0])), dtype='f', data=np.array(self.segment_WFs))
-            self.data_path = data_file.filename
+        fields = (
+            'segment_starts_IS',
+            'segment_WFs',
+        )
+        save_fields_to_hdf5(self, fields)
 
-    def load_data(self):
+    def create_segment_WFs(self):
         """
-        Load instance data from disk
+        Given self.segment_starts_IS, create self.segment_WFs containing
+        as rows the waveform of every segment
         """
-        with h5py.File(self.data_path, 'r') as data_file:
-            self.segment_starts_IS = data_file['segment_starts_IS'][()]
-            self.segment_WFs = data_file['segment_WFs'][()]
-
-    def create_segment_WFs(self, song_WF=None):
         if self.segment_starts_IS is not None:
-            if song_WF is not None:
-                song_WF, _ = self.song.WF
             n_segments = len(self.segment_starts_IS)
             segment_length = self.segment_starts_IS[1] - self.segment_starts_IS[0]
-            self.segment_WFs = np.zeros((n_segments, segment_length))
+            self._segment_WFs = np.zeros((n_segments, segment_length))
             for i in range(n_segments-1):
                 start = self.segment_starts_IS[i]
                 end = self.segment_starts_IS[i+1]
-                self.segment_WFs[i, :end - start] = song_WF[start:end]
+                self._segment_WFs[i, :end - start] = self.song.song_WF[start:end]
 
     def create_segments(self):
+        """
+        Given self.segment_WFs, create segment entries in the db and their corresponding audio files
+        """
         if self.segment_WFs is not None and self.segment_starts_IS is not None:
             self.segments.all().delete()
             segments = []
             for i, segment_WF in enumerate(self.segment_WFs):
                 segment = Segment(
                     segment_index=i,
-                    segment_list=self,
+                    segmenter=self,
                     length_in_samples=len(segment_WF),
                     start_position_in_samples=self.segment_starts_IS[i],
                     end_position_in_samples=self.segment_starts_IS[i+1] if i < len(self.segment_WFs) - 1 else self.segment_starts_IS[i] + len(segment_WF),
-                    WF=segment_WF,
+                    segment_WF=segment_WF,
                 )
                 segment.write_audio_file()
                 segments.append(segment)

@@ -2,7 +2,7 @@ import axios from 'axios';
 
 const callAddSong = (payload) => {
   const data = new FormData();
-  data.append('file', payload.file);
+  data.append('original_file', payload.file);
   data.append('title', payload.title);
   return axios.post(
     '/song/',

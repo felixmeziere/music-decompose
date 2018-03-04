@@ -1,11 +1,14 @@
+"""
+segmentation django app config
+"""
 from django.apps import AppConfig
-from django.db.models.signals import pre_delete
 
 class SegmentationConfig(AppConfig):
+    """
+    Django config class
+    """
     name = 'segmentation'
     verbose_name = 'Segmentation'
 
     def ready(self):
-        import segmentation.signals
-
-
+        import segmentation.signals #pylint: disable=W0612

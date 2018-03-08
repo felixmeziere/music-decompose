@@ -1,5 +1,5 @@
 """
-Exports
+Exports. Services used across all apps.
 """
 from .links_to_admin import get_link_to_modeladmin
 from .admin_mixins import (

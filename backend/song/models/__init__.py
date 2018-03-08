@@ -1,4 +1,4 @@
 """
-Export song modelss
+Export song models
 """
 from .song import Song

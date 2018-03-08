@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'django_celery_results',
     'song',
     'segmentation',
+    'source_separation',
 ]
 
 MIDDLEWARE = [

@@ -17,7 +17,7 @@ compute_tempo.short_description = 'Estimate Tempo'
 
 def create_blind_segmenter(modeladmin, response, queryset): #pylint: disable=W0613
     """
-    Action to start the segmentation of the song
+    Action to create segmenter with method blind for this song
     """
     for song in queryset:
         if song.tempo:

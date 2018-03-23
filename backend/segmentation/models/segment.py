@@ -1,9 +1,9 @@
-
 """
 Defines the Segment model.
 """
 import uuid
 from django.db import models
+from audiofield.fields import AudioField
 from music_decompose.services import rank_4_audacity, write_WF
 class Segment(models.Model):
     """
@@ -18,10 +18,10 @@ class Segment(models.Model):
     length_in_samples = models.PositiveIntegerField()
     start_position_in_samples = models.PositiveIntegerField()
     end_position_in_samples = models.PositiveIntegerField()
-    audio_file = models.FileField(null=True, blank=True)
+    audio_file = AudioField(blank=True, ext_whitelist=('.wav'), help_text=('Allowed type: .wav'))
 
     def __str__(self):
-        return 'Segment {0} of Song {1} with method {2}'.format(self.segment_index, str(self.segmenter.song), self.segmenter.method) #pylint: disable=E1101
+        return 'Segment {0} of Song {1}'.format(self.segment_index, str(self.segmenter.song)) #pylint: disable=E1101
 
     class Meta:
         unique_together = ('segment_index', 'segmenter',)

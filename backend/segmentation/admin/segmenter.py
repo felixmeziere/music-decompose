@@ -1,9 +1,10 @@
 """
-    Admin for Song model.
+    Admin for Segmenter model.
 """
 from django.contrib import admin
 from segmentation.models import Segmenter, Segment
 from segmentation.tasks import asynch_compute_segmentation_for_segmenter
+from source_separation.models import SourceSeparator
 from music_decompose.services import get_link_to_modeladmin
 from music_decompose.services import audio_file_player, NoDeleteAdminMixin, NoAddAdminMixin
 
@@ -11,9 +12,21 @@ def create_segments(modeladmin, response, queryset): #pylint: disable=W0613
     """
     Action to create the segments for selected songs
     """
-    for segmentList in queryset:
-        asynch_compute_segmentation_for_segmenter.delay(segmentList.uuid)
+    for segmenter in queryset:
+        asynch_compute_segmentation_for_segmenter.delay(segmenter.uuid)
 create_segments.short_description = 'Create Segments'
+
+def create_classic_source_separator(modeladmin, response, queryset): #pylint: disable=W0613
+    """
+    Action to create a source separator with method classic for this segmenter
+    """
+    for segmenter in queryset:
+        SourceSeparator.objects.create(
+            segmenter=segmenter,
+            method='classic',
+        )
+create_classic_source_separator.short_description = 'Create Source Separator with method classic'
+
 
 class SegmentInline(NoDeleteAdminMixin, NoAddAdminMixin, admin.TabularInline):
     """
@@ -63,7 +76,7 @@ class SegmenterAdmin(admin.ModelAdmin):
         }
     ordering = ('song', '-added_at',)
     inlines = (SegmentInline,)
-    actions = (create_segments,)
+    actions = (create_segments, create_classic_source_separator,)
     fields = (
         'uuid',
         'added_at',

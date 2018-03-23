@@ -14,12 +14,6 @@ SEGMENTATION_METHOD_CHOICES = (
     ('flexible', 'Flexible'),
 )
 
-def get_upload_path(instance, _):
-    """
-    Get path to upload files to. Changes with the song.
-    """
-    return instance.media_folder_name
-
 class Segmenter(models.Model):
     """
     Contains all the segments for a song and specific methods to handle them
@@ -36,7 +30,7 @@ class Segmenter(models.Model):
     data_path = models.CharField(max_length=500, null=True)
 
     def __str__(self):
-        return 'Segmenter for Song: {0} - {1} method'.format(str(self.song), self.method)
+        return 'Segmenter for Song: {0} - {1} method - {2} tempo lags per segment'.format(str(self.song), self.method, self.n_tempo_lags_per_segment)
 
     class Meta:
         """
@@ -49,20 +43,27 @@ class Segmenter(models.Model):
         self._segment_starts_IS = segment_starts_IS
         self._segment_WFs = segment_WFs
         if not self.data_path:
-            self.data_path = '{0}/segmenter_{1}.hdf5'.format(self.absolute_folder_name, self.song.sanitized_name)
+            self.data_path = '{0}/segmenter_{1}.hdf5'.format(self.absolute_folder_name, self.uuid)
+
+    @property
+    def param_string(self):
+        """
+        Name containing parameters suitable for paths
+        """
+        return '{0}_{1}'.format(self.method, self.n_tempo_lags_per_segment)
 
     @property
     def media_folder_name(self):
         """
-        Folder where all this segmentLists'-related files will be
+        Folder where all this Segmenters'-related files will be
         Relative path from /media
         """
-        return '{0}/segmentation/{1}'.format(self.song.sanitized_name, self.method)
+        return '{0}/segmentation/{1}'.format(self.song.sanitized_name, self.param_string)
 
     @property
     def absolute_folder_name(self):
         """
-        Folder where all this segmentLists'-related files will be
+        Folder where all this Segmenters'-related files will be
         Absolute path from root of project
         """
         return 'music_decompose/media/{0}'.format(self.media_folder_name)

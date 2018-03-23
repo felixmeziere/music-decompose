@@ -1,12 +1,12 @@
 
 """
-Segment the segmenter.song.song_WF and then save all the related data
+Segment the song and return the semgent start samples
 """
 import numpy as np
 
 def compute_segmentation(method, song_WF, sample_rate, tempo, n_tempo_lags_per_segment):
     """
-    Given segmenter object, do the segmentation and return the segment limits
+    Do the segmentation and return the segment starts
     """
     ### Detect segment limits
     if method == 'blind':

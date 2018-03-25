@@ -4,7 +4,7 @@
 from django.contrib import admin
 from segmentation.models import Segmenter, Segment
 from segmentation.tasks import asynch_compute_segmentation_for_segmenter
-from source_separation.models import SourceSeparator
+from source_separation.models import SegmentGrouper
 from music_decompose.services import get_link_to_modeladmin
 from music_decompose.services import audio_file_player, NoDeleteAdminMixin, NoAddAdminMixin
 
@@ -16,16 +16,16 @@ def create_segments(modeladmin, response, queryset): #pylint: disable=W0613
         asynch_compute_segmentation_for_segmenter.delay(segmenter.uuid)
 create_segments.short_description = 'Create Segments'
 
-def create_classic_source_separator(modeladmin, response, queryset): #pylint: disable=W0613
+def create_classic_segment_grouper(modeladmin, response, queryset): #pylint: disable=W0613
     """
-    Action to create a source separator with method classic for this segmenter
+    Action to create a segment grouper with method classic for this segmenter
     """
     for segmenter in queryset:
-        SourceSeparator.objects.create(
+        SegmentGrouper.objects.create(
             segmenter=segmenter,
             method='classic',
         )
-create_classic_source_separator.short_description = 'Create Source Separator with method classic'
+create_classic_segment_grouper.short_description = 'Create Segment Grouper with method classic'
 
 
 class SegmentInline(NoDeleteAdminMixin, NoAddAdminMixin, admin.TabularInline):
@@ -64,6 +64,31 @@ class SegmentInline(NoDeleteAdminMixin, NoAddAdminMixin, admin.TabularInline):
     ordering = ('segment_index',)
     show_change_link = True
 
+class SegmentGrouperInline(NoAddAdminMixin, admin.TabularInline):
+    """
+    Segment Grouper Admin
+    """
+    model = SegmentGrouper
+    fields = (
+        'method',
+        'pretty_link',
+    )
+    readonly_fields = (
+        'method',
+        'pretty_link'
+    )
+
+    def pretty_link(self, obj): #pylint: disable=R0201
+        """
+        Displays nicely
+        """
+        return get_link_to_modeladmin(str(obj), 'source_separation', 'segmentgrouper', obj.uuid)
+    pretty_link.short_description = 'Link'
+
+    ordering = ('method',)
+    show_change_link = True
+
+
 
 @admin.register(Segmenter)
 class SegmenterAdmin(admin.ModelAdmin):
@@ -75,8 +100,8 @@ class SegmenterAdmin(admin.ModelAdmin):
             'all': ('css/hide_admin_original.css', )     # Include extra css
         }
     ordering = ('song', '-added_at',)
-    inlines = (SegmentInline,)
-    actions = (create_segments, create_classic_source_separator,)
+    inlines = (SegmentGrouperInline, SegmentInline, )
+    actions = (create_segments, create_classic_segment_grouper,)
     fields = (
         'uuid',
         'added_at',

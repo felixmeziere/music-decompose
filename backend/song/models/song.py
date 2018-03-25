@@ -31,7 +31,6 @@ class Song(models.Model):
                                ext_whitelist=('.wav'),
                                help_text=('Allowed type: .wav'))
     tempo_estimation_status = models.CharField(max_length=15, choices=STATUS_CHOICES, default='not_started')
-    data_path = models.CharField(max_length=500, null=True)
 
     def __str__(self):
         return '{0}'.format(self.title)
@@ -39,8 +38,14 @@ class Song(models.Model):
     def __init__(self, *args, song_WF=None, **kwargs):
         super(Song, self).__init__(*args, **kwargs)
         self._song_WF = song_WF
-        if not self.data_path:
-            self.data_path = 'music_decompose/media/{0}/song_{1}.hdf5'.format(self.sanitized_name, self.sanitized_name)
+
+
+    @property
+    def data_path(self):
+        """
+        HDF5 file containing heavy data
+        """
+        return 'music_decompose/media/{0}/song_{1}.hdf5'.format(self.sanitized_name, self.sanitized_name)
 
     @property
     def sanitized_name(self):

@@ -7,8 +7,8 @@ class SongConfig(AppConfig):
     """
     Django config class
     """
-    name = 'source_separation'
-    verbose_name = 'Source Separation'
+    name = 'song'
+    verbose_name = 'Song'
 
     def ready(self):
-        import source_separation.signals #pylint: disable=W0612
+        import song.signals #pylint: disable=W0612

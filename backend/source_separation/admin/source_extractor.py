@@ -1,18 +1,18 @@
 """
-Admin for SourceSeparator model.
+Admin for SourceExtractor model.
 """
 from django.contrib import admin
-from source_separation.models import SourceSeparator, Source
-from source_separation.tasks import asynch_compute_source_separation_for_source_separator
+from source_separation.models import SourceExtractor, Source
+from source_separation.tasks import asynch_extract_sources_from_segment_groups_for_source_extractor
 from music_decompose.services import get_link_to_modeladmin
 from music_decompose.services import audio_file_player, NoDeleteAdminMixin, NoAddAdminMixin
 
 def create_sources(modeladmin, response, queryset): #pylint: disable=W0613
     """
-    Action to create the sources for selected source separators
+    Action to create the sources for selected source extractors
     """
-    for source_separator in queryset:
-        asynch_compute_source_separation_for_source_separator.delay(source_separator.uuid)
+    for source_extractor in queryset:
+        asynch_extract_sources_from_segment_groups_for_source_extractor.delay(source_extractor.uuid)
 create_sources.short_description = 'Create Sources'
 
 class SourceInline(NoDeleteAdminMixin, NoAddAdminMixin, admin.TabularInline):
@@ -43,22 +43,22 @@ class SourceInline(NoDeleteAdminMixin, NoAddAdminMixin, admin.TabularInline):
     show_change_link = True
 
 
-@admin.register(SourceSeparator)
-class SourceSeparatorAdmin(admin.ModelAdmin):
+@admin.register(SourceExtractor)
+class SourceExtractorAdmin(admin.ModelAdmin):
     """
-        Admin for SourceSeparator model.
+        Admin for SourceExtractor model.
     """
     class Media:
         css = {
             'all': ('css/hide_admin_original.css', )     # Include extra css
         }
-    ordering = ('segmenter', '-added_at',)
+    ordering = ('segment_grouper', '-added_at',)
     inlines = (SourceInline,)
     actions = (create_sources,)
     fields = (
         'uuid',
         'added_at',
-        'pretty_segmenter',
+        'pretty_segment_grouper',
         'method',
         'source_separation_status',
         'data_path',
@@ -66,21 +66,21 @@ class SourceSeparatorAdmin(admin.ModelAdmin):
     readonly_fields = (
         'added_at',
         'uuid',
-        'pretty_segmenter',
+        'pretty_segment_grouper',
         'method',
         'source_separation_status',
         'data_path',
     )
     list_display = (
         'uuid',
-        'pretty_segmenter',
+        'pretty_segment_grouper',
         'method',
         'source_separation_status',
     )
 
-    def pretty_segmenter(self, obj): #pylint: disable=R0201
+    def pretty_segment_grouper(self, obj): #pylint: disable=R0201
         """
-        Segmenter object link
+        Segment Grouper object link
         """
-        return get_link_to_modeladmin(str(obj.segmenter), 'segmentation', 'segmenter', obj.segmenter.uuid)
-    pretty_segmenter.short_description = 'Segmenter'
+        return get_link_to_modeladmin(str(obj.segment_grouper), 'source_separation', 'segmentgrouper', obj.segment_grouper.uuid)
+    pretty_segment_grouper.short_description = 'Segment Grouper'

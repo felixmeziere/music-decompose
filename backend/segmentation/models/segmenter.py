@@ -27,7 +27,6 @@ class Segmenter(models.Model):
     tempo = models.FloatField()
     n_tempo_lags_per_segment = models.PositiveSmallIntegerField(default=4)
     segmentation_status = models.CharField(max_length=15, choices=STATUS_CHOICES, default='not_started')
-    data_path = models.CharField(max_length=500, null=True)
 
     def __str__(self):
         return 'Segmenter for Song: {0} - {1} method - {2} tempo lags per segment'.format(str(self.song), self.method, self.n_tempo_lags_per_segment)
@@ -42,8 +41,14 @@ class Segmenter(models.Model):
         super(Segmenter, self).__init__(*args, **kwargs)
         self._segment_starts_IS = segment_starts_IS
         self._segment_WFs = segment_WFs
-        if not self.data_path:
-            self.data_path = '{0}/segmenter_{1}.hdf5'.format(self.absolute_folder_name, self.uuid)
+
+
+    @property
+    def data_path(self):
+        """
+        HDF5 file containing heavy data
+        """
+        return '{0}/segmenter_{1}.hdf5'.format(self.absolute_folder_name, self.uuid)
 
     @property
     def param_string(self):
@@ -104,31 +109,29 @@ class Segmenter(models.Model):
         Given self.segment_starts_IS, create self.segment_WFs containing
         as rows the waveform of every segment
         """
-        if self.segment_starts_IS is not None:
-            n_segments = len(self.segment_starts_IS)
-            segment_length = self.segment_starts_IS[1] - self.segment_starts_IS[0]
-            self._segment_WFs = np.zeros((n_segments, segment_length))
-            for i in range(n_segments-1):
-                start = self.segment_starts_IS[i]
-                end = self.segment_starts_IS[i+1]
-                self._segment_WFs[i, :end - start] = self.song.song_WF[start:end]
+        n_segments = len(self.segment_starts_IS)
+        segment_length = self.segment_starts_IS[1] - self.segment_starts_IS[0]
+        self._segment_WFs = np.zeros((n_segments, segment_length))
+        for i in range(n_segments-1):
+            start = self.segment_starts_IS[i]
+            end = self.segment_starts_IS[i+1]
+            self._segment_WFs[i, :end - start] = self.song.song_WF[start:end]
 
     def create_segments(self):
         """
         Given self.segment_WFs, create segment entries in the db and their corresponding audio files
         """
-        if self.segment_WFs is not None and self.segment_starts_IS is not None:
-            self.segments.all().delete()
-            segments = []
-            for i, segment_WF in enumerate(self.segment_WFs):
-                segment = Segment(
-                    segment_index=i,
-                    segmenter=self,
-                    length_in_samples=len(segment_WF),
-                    start_position_in_samples=self.segment_starts_IS[i],
-                    end_position_in_samples=self.segment_starts_IS[i+1] if i < len(self.segment_WFs) - 1 else self.segment_starts_IS[i] + len(segment_WF),
-                    segment_WF=segment_WF,
-                )
-                segment.write_audio_file()
-                segments.append(segment)
-            Segment.objects.bulk_create(segments)
+        self.segments.all().delete()
+        segments = []
+        for i, segment_WF in enumerate(self.segment_WFs):
+            segment = Segment(
+                segment_index=i,
+                segmenter=self,
+                length_in_samples=len(segment_WF),
+                start_position_in_samples=self.segment_starts_IS[i],
+                end_position_in_samples=self.segment_starts_IS[i+1] if i < len(self.segment_WFs) - 1 else self.segment_starts_IS[i] + len(segment_WF),
+                segment_WF=segment_WF,
+            )
+            segment.write_audio_file()
+            segments.append(segment)
+        Segment.objects.bulk_create(segments)

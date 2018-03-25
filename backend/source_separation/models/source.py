@@ -15,15 +15,15 @@ class Source(models.Model):
         primary_key=True, default=uuid.uuid4, editable=False)
     added_at = models.DateTimeField(auto_now_add=True)
     source_index = models.PositiveSmallIntegerField()
-    source_separator = models.ForeignKey('source_separation.SourceSeparator', on_delete=models.CASCADE, related_name='sources')
+    source_extractor = models.ForeignKey('source_separation.SourceExtractor', on_delete=models.CASCADE, related_name='sources')
     segment_group = ArrayField(models.IntegerField(null=True), null=True)
     audio_file = AudioField(blank=True, ext_whitelist=('.wav'), help_text=('Allowed type: .wav'))
 
     def __str__(self):
-        return 'Source {0} of Song {1}'.format(self.source_index, str(self.source_separator.segmenter.song)) #pylint: disable=E1101
+        return 'Source {0} of Song {1}'.format(self.source_index, str(self.source_extractor.segmenter.song)) #pylint: disable=E1101
 
     class Meta:
-        unique_together = ('source_index', 'source_separator',)
+        unique_together = ('source_index', 'source_extractor',)
 
     def __init__(self, *args, source_WF=None, **kwargs):
         super(Source, self).__init__(*args, **kwargs)
@@ -36,7 +36,7 @@ class Source(models.Model):
         Folder where all this source's-related files will be
         Relative path from /medias
         """
-        return '{0}/sources'.format(self.source_separator.media_folder_name) #pylint: disable=E1101
+        return '{0}/sources'.format(self.source_extractor.media_folder_name) #pylint: disable=E1101
 
     @property
     def absolute_folder_name(self):
@@ -44,7 +44,7 @@ class Source(models.Model):
         Folder where all this source's-related files will be
         Absolute path from root of project
         """
-        return '{0}/sources'.format(self.source_separator.absolute_folder_name) #pylint: disable=E1101
+        return '{0}/sources'.format(self.source_extractor.absolute_folder_name) #pylint: disable=E1101
 
     def write_audio_file(self):
         """
@@ -52,7 +52,7 @@ class Source(models.Model):
         """
         if self.source_WF is not None:
             file_name = '{0}.{1}'.format(rank_4_audacity(self.source_index), 'wav')
-            write_WF(self.source_WF, '{0}/{1}'.format(self.absolute_folder_name, file_name), self.source_separator.segmenter.song.sample_rate) #pylint: disable=E1101
+            write_WF(self.source_WF, '{0}/{1}'.format(self.absolute_folder_name, file_name), self.source_extractor.segmenter.song.sample_rate) #pylint: disable=E1101
             self.audio_file = '{0}/{1}'.format(self.media_folder_name, file_name)
         else:
             raise ValueError('Create Audio File was called but there is no WF for source {0}'.format(str(self)))

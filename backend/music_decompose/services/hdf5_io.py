@@ -15,9 +15,12 @@ def load_fields_from_hdf5(instance, fields):
     """
     Load fields from hdf5 file to corresponding attributes in instance
     """
-    with h5py.File(instance.data_path, 'r') as data_file:
-        for field in fields:
-            setattr(instance, get_hidden_field_name(field), data_file[field][()])
+    try:
+        with h5py.File(instance.data_path, 'r') as data_file:
+            for field in fields:
+                setattr(instance, get_hidden_field_name(field), data_file[field][()])
+    except (FileNotFoundError, OSError):
+        pass
 
 def save_fields_to_hdf5(instance, fields):
     """

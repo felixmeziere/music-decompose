@@ -18,7 +18,7 @@ def compute_segmentation_for_segmenter(segmenter):
     )
 
     ### Save data
-    segmenter._segment_starts_IS = segment_starts_IS
+    segmenter.segment_starts_IS = segment_starts_IS
     segmenter.create_segment_WFs()
     segmenter.create_segments()
     segmenter.dump_data()

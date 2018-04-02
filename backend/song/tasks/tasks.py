@@ -15,6 +15,5 @@ def asynch_compute_tempo_for_song(song_uuid):
     do_task(
         compute_tempo_for_song,
         Song,
-        'tempo_estimation_status',
         song_uuid,
     )

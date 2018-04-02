@@ -1,4 +1,4 @@
 """
 Exports
 """
-from .segmenter import SegmenterAdmin
+from .segmenter import SegmenterAdmin, SegmenterInline

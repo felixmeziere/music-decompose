@@ -1,11 +1,12 @@
 """
-    Admin for Song model.
+Admin for Song model.
 """
 from django.contrib import admin
 from song.models import Song
 from song.tasks import asynch_compute_tempo_for_song
 from segmentation.models import Segmenter
-from music_decompose.services import audio_file_player, NoAddAdminMixin
+from segmentation.admin import SegmenterInline
+from music_decompose.services import audio_file_player
 
 def compute_tempo(modeladmin, response, queryset): #pylint: disable=W0613
     """
@@ -22,7 +23,7 @@ def create_blind_segmenter(modeladmin, response, queryset): #pylint: disable=W06
     for song in queryset:
         if song.tempo:
             Segmenter.objects.create(
-                song=song,
+                parent=song,
                 method='blind',
                 tempo=song.tempo,
                 n_tempo_lags_per_segment=4,
@@ -31,29 +32,10 @@ def create_blind_segmenter(modeladmin, response, queryset): #pylint: disable=W06
             raise Exception('Please compute the tempo of the song before segmenting it.')
 create_blind_segmenter.short_description = 'Create Segmenter with method blind'
 
-class SegmenterInline(NoAddAdminMixin, admin.TabularInline):
-    """
-    Segment Admin
-    """
-    model = Segmenter
-    fields = (
-        'method',
-        'tempo',
-        'n_tempo_lags_per_segment',
-    )
-    readonly_fields = (
-        'method',
-        'tempo',
-        'n_tempo_lags_per_segment',
-    )
-    ordering = ('method', 'tempo', 'n_tempo_lags_per_segment')
-    show_change_link = True
-
-
 @admin.register(Song)
 class SongAdmin(admin.ModelAdmin):
     """
-        Admin for Song model.
+    Admin for Song model.
     """
     fields = (
         'uuid',
@@ -61,7 +43,7 @@ class SongAdmin(admin.ModelAdmin):
         'title',
         'original_file',
         'original_song_player',
-        'tempo_estimation_status',
+        'processing_status',
         'tempo',
     )
 
@@ -71,13 +53,13 @@ class SongAdmin(admin.ModelAdmin):
         'added_at',
         'original_song_player',
         'title',
-        'tempo_estimation_status',
+        'processing_status',
     )
 
     list_display = (
         'title',
         'original_file',
-        'tempo_estimation_status',
+        'processing_status',
         'tempo',
         'original_song_player',
     )

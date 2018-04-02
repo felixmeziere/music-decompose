@@ -13,11 +13,11 @@ def extract_sources_from_segment_groups_for_source_extractor(source_extractor):
     _, source_WFs = extract_sources_from_segment_groups(
         source_extractor.method,
         source_extractor.segment_grouper.segment_groups,
-        source_extractor.segmenter.segment_WFs,
+        source_extractor.segment_grouper.segmenter.segment_WFs,
     )
 
     ### Save data
-    source_extractor._source_WFs = source_WFs
+    source_extractor.source_WFs = source_WFs
     source_extractor.create_sources()
     source_extractor.dump_data()
     source_extractor.save()

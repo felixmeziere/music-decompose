@@ -12,3 +12,4 @@ class SongConfig(AppConfig):
 
     def ready(self):
         import song.signals #pylint: disable=W0612
+        import music_decompose.execute_on_startup #pylint: disable=W0612

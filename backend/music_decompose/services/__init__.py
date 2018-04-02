@@ -19,5 +19,4 @@ from .do_task import do_task
 from .hdf5_io import (
     load_fields_from_hdf5,
     save_fields_to_hdf5,
-    get_hidden_field_name,
 )

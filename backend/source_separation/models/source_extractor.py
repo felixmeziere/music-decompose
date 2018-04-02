@@ -1,119 +1,52 @@
 """
 Defines the SourceExtractor model.
 """
-import uuid
 from django.db import models
 import numpy as np
-from music_decompose.services import load_fields_from_hdf5, save_fields_to_hdf5
-from music_decompose.constants import STATUS_CHOICES
-from .segment_grouper import SegmentGrouper
-from .source import Source
+from music_decompose.models import Processor
+from source_separation.models.segment_grouper import SegmentGrouper
+from source_separation.models.source import Source
 
 SOURCE_SEPARATION_METHOD_CHOICES = (
     ('classic', 'Classic'),
 )
 
-class SourceExtractor(models.Model):
+PARAMETERS = (
+    'method',
+)
+class SourceExtractor(Processor):
     """
     Contains all the sources for a song and specific methods to handle them
     """
-    # DB fields
-    uuid = models.UUIDField(
-        primary_key=True, default=uuid.uuid4, editable=False)
-    added_at = models.DateTimeField(auto_now_add=True)
-    segment_grouper = models.ForeignKey(SegmentGrouper, on_delete=models.CASCADE, related_name='source_extractors')
-    method = models.CharField(max_length=10, choices=SOURCE_SEPARATION_METHOD_CHOICES)
-    source_separation_status = models.CharField(max_length=15, choices=STATUS_CHOICES, default='not_started')
+    # Class attributes
+    data_fields = ('source_WFs',)
+    parameters = PARAMETERS
 
-    def __str__(self):
-        return 'Source Extractor for Song: {0} - {1} method'.format(str(self.song), self.method)
+    # DB fields
+    parent = models.ForeignKey(SegmentGrouper, on_delete=models.CASCADE, related_name='source_extractors')
+    method = models.CharField(max_length=10, choices=SOURCE_SEPARATION_METHOD_CHOICES)
 
     class Meta:
         """
-        Django Meta class
+        Django Meta Class
         """
-        unique_together = ('segment_grouper', 'method')
-
-    def __init__(self, *args, source_WFs=None, **kwargs):
-        super(SourceExtractor, self).__init__(*args, **kwargs)
-        self._source_WFs = source_WFs
+        unique_together = ('parent',) + PARAMETERS
 
     @property
-    def segmenter(self):
+    def segment_grouper(self):
         """
-        Segmenter instance attached to this
+        Convenience field
         """
-        return self.segment_grouper.segmenter
-
-    @property
-    def song(self):
-        """
-        Song instance attached to this
-        """
-        return self.segmenter.song
-
-    @property
-    def data_path(self):
-        """
-        HDF5 file containing heavy data
-        """
-        return '{0}/source_extractor_{1}.hdf5'.format(self.absolute_folder_name, self.uuid)
-
-    @property
-    def param_string(self):
-        """
-        Name containing parameters suitable for paths
-        """
-        return '{0}'.format(self.method)
-
-    @property
-    def media_folder_name(self):
-        """
-        Folder where all this Source Extractor's-related files will be.
-        Relative path from /media
-        """
-        return '{0}/source_separation/{1}_{2}_{3}'.format(
-            self.song.sanitized_name,
-            self.segmenter.param_string,
-            self.segment_grouper.param_string,
-            self.param_string,
-        )
-
-    @property
-    def absolute_folder_name(self):
-        """
-        Folder where all this Source Extractor's-related files will be.
-        Absolute path from root of project
-        """
-        return 'music_decompose/media/{0}'.format(self.media_folder_name)
-
-    @property
-    def source_WFs(self):
-        """
-        Array with the waveforms of the sources as rows
-        """
-        if self._source_WFs is None and self.data_path is not None:
-            load_fields_from_hdf5(self, ['source_WFs'])
-
-        return self._source_WFs
-
-    def dump_data(self):
-        """
-        Dump instance data to disk
-        """
-        fields = (
-            'source_WFs',
-        )
-        save_fields_to_hdf5(self, fields)
+        return self.parent
 
     def create_source_WFs(self):
         """
         Given self.segment_grouper.segment_groups, create self.source_WFs containing
         as rows the waveform of every source
         """
-        self._source_WFs = np.zeros((self.segment_grouper.segment_groups.shape[0], len(self.song.song_WF)))
+        self.source_WFs = np.zeros((self.segment_grouper.segment_groups.shape[0], len(self.song.song_WF))) #pylint: disable=W0201
         for i, _ in enumerate(self.segment_grouper.segment_groups):
-            self._source_WFs[i, :] = self.song.song_WF
+            self.source_WFs[i, :] = self.song.song_WF
 
     def create_sources(self):
         """
@@ -123,10 +56,10 @@ class SourceExtractor(models.Model):
         sources = []
         for i, source_WF in enumerate(self.source_WFs):
             source = Source(
-                source_index=i,
-                source_extractor=self,
+                ind=i,
+                parent=self,
                 segment_group=list(self.segment_grouper.segment_groups[i]),
-                source_WF=source_WF,
+                WF=source_WF,
             )
             source.write_audio_file()
             sources.append(source)

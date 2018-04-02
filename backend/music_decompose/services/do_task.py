@@ -3,13 +3,13 @@ Wrapper to handle performing a task and its status
 """
 
 
-def do_task(task, model, status_field, uuid):
+def do_task(task, model, uuid):
     """
     The function
     """
     ### Initialise
     instance = model.objects.get(pk=uuid)
-    setattr(instance, status_field, 'pending')
+    instance.processing_status = 'pending'
     instance.save()
 
     try:
@@ -17,9 +17,9 @@ def do_task(task, model, status_field, uuid):
         task(instance)
 
         ### End
-        setattr(instance, status_field, 'done')
+        instance.processing_status = 'done'
         instance.save()
     except Exception as error:
-        setattr(instance, status_field, 'failed')
+        instance.processing_status = 'failed'
         instance.save()
         raise error

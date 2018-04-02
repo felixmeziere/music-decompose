@@ -30,6 +30,11 @@ class SongSerializer(serializers.ModelSerializer):
         Customise create to dump song waveform to file
         """
         instance = super(SongSerializer, self).create(validated_data)
-        instance.import_song_WF()
-        instance.dump_data()
-        return instance
+        try:
+            instance.import_song_WF()
+            instance.dump_data()
+            instance.save()
+            return instance
+        except Exception as error:
+            instance.delete()
+            raise serializers.ValidationError('The song WF couldn\'t be handled: {}'.format(error))

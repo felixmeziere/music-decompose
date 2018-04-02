@@ -17,6 +17,6 @@ def group_segments_for_segment_grouper(segment_grouper):
     )
 
     ### Save data
-    segment_grouper._segment_groups = segment_groups
+    segment_grouper.segment_groups = segment_groups
     segment_grouper.dump_data()
     segment_grouper.save()

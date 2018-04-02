@@ -15,6 +15,5 @@ def asynch_compute_segmentation_for_segmenter(segmenter_uuid):
     do_task(
         compute_segmentation_for_segmenter,
         Segmenter,
-        'segmentation_status',
         segmenter_uuid,
     )

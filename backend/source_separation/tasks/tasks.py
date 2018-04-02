@@ -16,7 +16,6 @@ def asynch_group_segments_for_segment_grouper(segment_grouper_uuid):
     do_task(
         group_segments_for_segment_grouper,
         SegmentGrouper,
-        'segment_grouping_status',
         segment_grouper_uuid,
     )
 
@@ -28,6 +27,5 @@ def asynch_extract_sources_from_segment_groups_for_source_extractor(source_extra
     do_task(
         extract_sources_from_segment_groups_for_source_extractor,
         SourceExtractor,
-        'source_creation_status',
         source_extractor_uuid,
     )

@@ -1,4 +1,3 @@
-
 """
 Separate the sources and return the segment groups
 """

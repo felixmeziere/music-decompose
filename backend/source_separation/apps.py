@@ -9,6 +9,3 @@ class SourceSeparationConfig(AppConfig):
     """
     name = 'source_separation'
     verbose_name = 'Source Separation'
-
-    def ready(self):
-        import source_separation.signals #pylint: disable=W0612

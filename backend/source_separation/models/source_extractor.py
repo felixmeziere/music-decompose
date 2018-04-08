@@ -6,6 +6,7 @@ import numpy as np
 from music_decompose.models import Processor
 from source_separation.models.segment_grouper import SegmentGrouper
 from source_separation.models.source import Source
+from source_separation.sp_functions import extract_sources_from_segment_groups
 
 SOURCE_SEPARATION_METHOD_CHOICES = (
     ('classic', 'Classic'),
@@ -39,14 +40,16 @@ class SourceExtractor(Processor):
         """
         return self.parent
 
-    def create_source_WFs(self):
+    def compute_source_WFs(self):
         """
-        Given self.segment_grouper.segment_groups, create self.source_WFs containing
+        Given self.segment_grouper.segment_groups, compute self.source_WFs containing
         as rows the waveform of every source
         """
-        self.source_WFs = np.zeros((self.segment_grouper.segment_groups.shape[0], len(self.song.song_WF))) #pylint: disable=W0201
-        for i, _ in enumerate(self.segment_grouper.segment_groups):
-            self.source_WFs[i, :] = self.song.song_WF
+        _, self.source_WFs = extract_sources_from_segment_groups( # pylint: disable=W0201
+            self.method,
+            self.segment_grouper.segment_groups,
+            self.segment_grouper.segmenter.segment_WFs,
+        )
 
     def create_sources(self):
         """
@@ -64,3 +67,9 @@ class SourceExtractor(Processor):
             source.write_audio_file()
             sources.append(source)
         Source.objects.bulk_create(sources)
+
+    def process_and_save(self):
+        self.compute_source_WFs()
+        self.create_sources()
+        self.dump_data()
+        self.save()

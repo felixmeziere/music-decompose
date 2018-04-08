@@ -5,6 +5,7 @@ Abstract model to perform signal processing and store the Output
 from django.db import models
 from music_decompose.constants import STATUS_CHOICES
 from music_decompose.services import save_fields_to_hdf5
+from music_decompose.tasks import async_process_and_save
 from ._container import Container
 
 class Processor(Container): # pylint: disable=W0223
@@ -98,3 +99,19 @@ class Processor(Container): # pylint: disable=W0223
         Dump instance data to disk
         """
         save_fields_to_hdf5(self, self.data_fields)
+
+    def process_and_save(self):
+        """
+        Execute the purpose of the processor and save the results
+        """
+        raise NotImplementedError
+
+    def async_process_and_save(self, asynch=True):
+        """
+        Execute process_and_save in the background
+        """
+        if asynch:
+            function = async_process_and_save.delay
+        else:
+            function = async_process_and_save
+        function(self.uuid, self.__class__.__name__)

@@ -3,7 +3,7 @@ Admin for Song model.
 """
 from django.contrib import admin
 from song.models import Song
-from song.tasks import asynch_compute_tempo_for_song
+from song.tasks import run_full_flow
 from segmentation.models import Segmenter
 from segmentation.admin import SegmenterInline
 from music_decompose.services import audio_file_player
@@ -13,8 +13,15 @@ def compute_tempo(modeladmin, response, queryset): #pylint: disable=W0613
     Action to estimate tempo for song
     """
     for song in queryset:
-        asynch_compute_tempo_for_song.delay(song.uuid)
+        song.async_process_and_save()
 compute_tempo.short_description = 'Estimate Tempo'
+
+def run_full_flow_for_songs(modeladmin, response, queryset): #pylint: disable=W0613
+    """
+    Run full decomposition flow on selected songs
+    """
+    for song in queryset:
+        run_full_flow.delay(song.uuid)
 
 def create_blind_segmenter(modeladmin, response, queryset): #pylint: disable=W0613
     """
@@ -64,7 +71,7 @@ class SongAdmin(admin.ModelAdmin):
         'original_song_player',
     )
 
-    actions = (compute_tempo, create_blind_segmenter)
+    actions = (compute_tempo, create_blind_segmenter, run_full_flow_for_songs)
 
     list_display_links = ['title']
 

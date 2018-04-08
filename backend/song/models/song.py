@@ -6,6 +6,7 @@ import librosa as lr
 from django.db import models
 from audiofield.fields import AudioField
 from music_decompose.models import Processor
+from song.sp_functions import compute_tempo
 
 def get_upload_path(instance, _):
     """
@@ -53,3 +54,13 @@ class Song(Processor):
         Import WF from wav file to self.song_WF
         """
         self.song_WF = lr.load(self.original_file.path, self.sample_rate)[0] #pylint: disable=W0201
+
+    def compute_tempo(self):
+        """
+        Detect tempo of song
+        """
+        self.tempo = compute_tempo(self.original_file.file.name)
+
+    def process_and_save(self):
+        self.compute_tempo()
+        self.save()

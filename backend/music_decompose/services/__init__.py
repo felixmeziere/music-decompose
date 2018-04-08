@@ -15,7 +15,6 @@ from .audio_io import (
     write_WF,
     write_WFs,
 )
-from .do_task import do_task
 from .hdf5_io import (
     load_fields_from_hdf5,
     save_fields_to_hdf5,

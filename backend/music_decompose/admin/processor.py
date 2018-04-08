@@ -22,9 +22,16 @@ class ProcessorInline(ContainerInline):
         return get_link_to_modeladmin(str(obj), obj._meta.db_table, obj.uuid)
     pretty_link.short_description = 'Link'
 
+def process_and_save(modeladmin, response, queryset): #pylint: disable=W0613
+    """
+    Action to run process_and_save asynchronously on selected objects
+    """
+    for instance in queryset:
+        instance.async_process_and_save()
+
 class ProcessorAdmin(ContainerAdmin):
     """
-    Admin for Song model.
+    Admin for Processor Abstract model.
     """
     class Media:
         """
@@ -37,3 +44,4 @@ class ProcessorAdmin(ContainerAdmin):
     readonly_fields = ContainerAdmin.readonly_fields + ()
     list_display = ContainerAdmin.list_display + ()
     ordering = ContainerAdmin.ordering + ()
+    actions = ContainerAdmin.actions + (process_and_save,)

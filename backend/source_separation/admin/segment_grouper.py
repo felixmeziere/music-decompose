@@ -2,18 +2,9 @@
 Admin for Segmenter model.
 """
 from django.contrib import admin
-from source_separation.tasks import asynch_group_segments_for_segment_grouper
 from source_separation.models import SourceExtractor, SegmentGrouper
 from source_separation.admin.source_extractor import SourceExtractorInline
 from music_decompose.admin import ProcessorAdmin, ProcessorInline
-
-def create_segment_groups(modeladmin, response, queryset): #pylint: disable=W0613
-    """
-    Action to create the segments groups for selected segment groupers
-    """
-    for segment_grouper in queryset:
-        asynch_group_segments_for_segment_grouper.delay(segment_grouper.uuid)
-create_segment_groups.short_description = 'Create Segment Groups'
 
 def create_classic_source_extractor(modeladmin, response, queryset): #pylint: disable=W0613
     """
@@ -38,5 +29,7 @@ class SegmentGrouperAdmin(ProcessorAdmin):
     """
     Admin for SegmenterGrouper model.
     """
-    actions = (create_segment_groups, create_classic_source_extractor,)
+    actions = ProcessorAdmin.actions + (create_classic_source_extractor,)
     inlines = (SourceExtractorInline,)
+    fields = ProcessorAdmin.fields + ('segment_groups',)
+    readonly_fields = ProcessorAdmin.readonly_fields + ('segment_groups',)

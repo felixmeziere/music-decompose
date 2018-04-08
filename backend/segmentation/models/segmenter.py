@@ -5,6 +5,7 @@ import numpy as np
 from django.db import models
 from song.models import Song
 from segmentation.models import Segment
+from segmentation.sp_functions import compute_segmentation
 from music_decompose.models import Processor
 
 SEGMENTATION_METHOD_CHOICES = (
@@ -36,7 +37,19 @@ class Segmenter(Processor):
         """
         unique_together = ('parent', 'method', 'n_tempo_lags_per_segment',)
 
-    def create_segment_WFs(self):
+    def compute_segment_starts_IS(self):
+        """
+        Detect segment limits
+        """
+        self.segment_starts_IS = compute_segmentation( # pylint: disable=W0201
+            self.method,
+            self.song.song_WF,
+            self.song.sample_rate,
+            self.tempo,
+            self.n_tempo_lags_per_segment,
+        )
+
+    def compute_segment_WFs(self):
         """
         Given self.segment_starts_IS, create self.segment_WFs containing
         as rows the waveform of every segment
@@ -67,3 +80,10 @@ class Segmenter(Processor):
             segment.write_audio_file()
             segments.append(segment)
         Segment.objects.bulk_create(segments)
+
+    def process_and_save(self):
+        self.compute_segment_starts_IS()
+        self.compute_segment_WFs()
+        self.create_segments()
+        self.dump_data()
+        self.save()

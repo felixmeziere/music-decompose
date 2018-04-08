@@ -30,7 +30,7 @@ class ContainerAdmin(admin.ModelAdmin):
         'pretty_song',
         'processing_status',
     )
-
+    actions = ()
     def pretty_song(self, obj): #pylint: disable=R0201
         """
         Song object link

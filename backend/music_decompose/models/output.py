@@ -5,7 +5,7 @@ Abstract model to represent Output of Processor and store the corresponding audi
 from django.db import models
 from audiofield.fields import AudioField
 from music_decompose.services import rank_4_audacity, write_WF
-from ._container import Container
+from .container import Container
 
 class Output(Container): # pylint: disable=W0223
     """
@@ -43,14 +43,6 @@ class Output(Container): # pylint: disable=W0223
         """
         return '{0}/{1}s'.format(self.parent.media_folder_name, self.__class__.__name__)
 
-    @property
-    def absolute_folder_name(self):
-        """
-        Folder where all this Output's-related files will be
-        Relative path from root of project
-        """
-        return 'music_decompose/media/{0}'.format(self.media_folder_name)
-
     def write_audio_file(self):
         """
         Create or overwrite audio file and attach to instance
@@ -61,3 +53,6 @@ class Output(Container): # pylint: disable=W0223
             self.audio_file = '{0}/{1}'.format(self.media_folder_name, file_name)
         else:
             raise ValueError('Write Audio File was called but there is no WF for segment {0}'.format(str(self)))
+
+    def data_path(self):
+        pass

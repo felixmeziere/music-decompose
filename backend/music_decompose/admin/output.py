@@ -1,7 +1,7 @@
 """
 Admin for Ouptut submodel.
 """
-from music_decompose.admin._container import ContainerInline
+from music_decompose.admin.container import ContainerInline
 from music_decompose.services import audio_file_player
 
 class OutputInline(ContainerInline):

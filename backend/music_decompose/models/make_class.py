@@ -27,15 +27,15 @@ def get_data_field_setter(data_field):
         Set value of data_field in the instance.
         """
         if value is not None and not isinstance(value, np.ndarray):
-            raise TypeError('Only numpy arrays should be given as data_field to a Container')
+            raise TypeError('Only numpy arrays should be given to a Container as data_field')
         setattr(self, '_' + data_field, value)
     return data_field_setter
 
 
-def make_processor(ProcessorSubClass):
+def make_container(ContainerSubClass):
     """
-    Add custom properties to Processor.
+    Add custom properties to Container.
     - a getter and setter for each data_field
     """
-    for data_field in ProcessorSubClass.data_fields:
-        setattr(ProcessorSubClass, data_field, property(get_data_field_getter(data_field), get_data_field_setter(data_field)))
+    for data_field in ContainerSubClass.data_fields:
+        setattr(ContainerSubClass, data_field, property(get_data_field_getter(data_field), get_data_field_setter(data_field)))

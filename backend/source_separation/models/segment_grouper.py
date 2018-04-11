@@ -4,7 +4,6 @@ Defines the SourceExtractor model.
 from django.db import models
 from segmentation.models import Segmenter
 from music_decompose.models import Processor
-from music_decompose.models.make_class import make_processor
 from source_separation.sp_functions import group_segments
 
 SEGMENT_GROUPING_METHOD_CHOICES = (

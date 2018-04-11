@@ -1,7 +1,6 @@
 """
 Add dynamic attributes to Abstract admin models
 """
-from .processor import ProcessorAdmin, ProcessorInline
 
 def make_processor_admin(ProcessorSubClass, ProcessorAdminSubClass):
     """

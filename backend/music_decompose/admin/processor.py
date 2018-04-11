@@ -1,7 +1,7 @@
 """
 Admin for Processor Submodel.
 """
-from music_decompose.admin._container import ContainerAdmin, ContainerInline
+from music_decompose.admin.container import ContainerAdmin, ContainerInline
 from music_decompose.services import get_link_to_modeladmin
 
 class ProcessorInline(ContainerInline):

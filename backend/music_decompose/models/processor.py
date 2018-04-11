@@ -4,9 +4,8 @@ Abstract model to perform signal processing and store the Output
 
 from django.db import models
 from music_decompose.constants import STATUS_CHOICES
-from music_decompose.services import save_fields_to_hdf5
 from music_decompose.tasks import async_process_and_save
-from ._container import Container
+from .container import Container
 
 class Processor(Container): # pylint: disable=W0223
     """
@@ -85,20 +84,6 @@ class Processor(Container): # pylint: disable=W0223
         Relative path from /media
         """
         return '{0}/{1}/{2}/{3}'.format(self.song.sanitized_name, self._meta.app_label, self.step_name_for_paths, self.param_string)
-
-    @property
-    def absolute_folder_name(self):
-        """
-        Folder where all this Processor's-related files will be
-        Relative path from root of project
-        """
-        return 'music_decompose/media/{0}'.format(self.media_folder_name)
-
-    def dump_data(self):
-        """
-        Dump instance data to disk
-        """
-        save_fields_to_hdf5(self, self.data_fields)
 
     def process_and_save(self):
         """

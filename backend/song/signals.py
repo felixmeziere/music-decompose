@@ -7,7 +7,7 @@ from django.dispatch import receiver
 from django.db.models.signals import pre_delete
 from song.models import Song
 from music_decompose.models import Output
-from music_decompose.models import Processor
+from music_decompose.models import Container
 
 
 @receiver(pre_delete, sender=Song)
@@ -33,7 +33,7 @@ def remove_audio_file_pre_delete(sender, instance, using, **kwargs): # pylint: d
 
 def remove_data_pre_delete(sender, instance, using, **kwargs): # pylint: disable=W0613
     """
-    Ensures all the associated of a Processor is deleted
+    Ensures all the associated of a Container is deleted
     when instance is deleted
     """
     if os.path.isdir(instance.absolute_folder_name):
@@ -44,5 +44,5 @@ def remove_data_pre_delete(sender, instance, using, **kwargs): # pylint: disable
 for model in Output.__subclasses__():
     pre_delete.connect(remove_audio_file_pre_delete, sender=model)
 
-for model in Processor.__subclasses__():
+for model in Container.__subclasses__():
     pre_delete.connect(remove_data_pre_delete, sender=model)

@@ -3,6 +3,7 @@ Abstract model to handle storage paths
 """
 import uuid
 from django.db import models
+from music_decompose.services import save_fields_to_hdf5
 
 class Container(models.Model):
     """
@@ -57,10 +58,10 @@ class Container(models.Model):
     @property
     def absolute_folder_name(self):
         """
-        Folder where all this container's-related files will be.
-        Absolute path from root of project.
+        Folder where all this Container's-related files will be
+        Relative path from root of project
         """
-        raise NotImplementedError
+        return 'music_decompose/media/{0}'.format(self.media_folder_name)
 
     @property
     def song(self):
@@ -77,3 +78,9 @@ class Container(models.Model):
         HDF5 file containing data_fields info
         """
         raise NotImplementedError
+
+    def dump_data(self):
+        """
+        Dump instance data to disk
+        """
+        save_fields_to_hdf5(self, self.data_fields)

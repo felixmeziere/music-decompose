@@ -3,7 +3,7 @@ Defines the Segmenter model.
 """
 import numpy as np
 from django.db import models
-from song.models import Song
+from song.models import TempoEstimator
 from segmentation.models import Segment
 from segmentation.sp_functions import compute_segmentation
 from music_decompose.models import Processor
@@ -26,9 +26,8 @@ class Segmenter(Processor):
     parameters = PARAMETERS
 
     # DB fields
-    parent = models.ForeignKey(Song, on_delete=models.CASCADE, related_name='segmenters')
+    parent = models.ForeignKey(TempoEstimator, on_delete=models.CASCADE, related_name='segmenters')
     method = models.CharField(max_length=10, choices=SEGMENTATION_METHOD_CHOICES)
-    tempo = models.FloatField()
     n_tempo_lags_per_segment = models.PositiveSmallIntegerField(default=4)
 
     class Meta:
@@ -45,7 +44,7 @@ class Segmenter(Processor):
             self.method,
             self.song.song_WF,
             self.song.sample_rate,
-            self.tempo,
+            self.parent.tempo,
             self.n_tempo_lags_per_segment,
         )
 

@@ -2,7 +2,6 @@
 Defines the SourceExtractor model.
 """
 from django.db import models
-import numpy as np
 from music_decompose.models import Processor
 from source_separation.models.segment_grouper import SegmentGrouper
 from source_separation.models.source import Source

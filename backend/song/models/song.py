@@ -50,6 +50,9 @@ class Song(Container):
 
     @property
     def path_in_hdf5(self):
+        """
+        Path with data related to Song instance in the hdf5
+        """
         return '/'
 
     @property

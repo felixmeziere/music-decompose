@@ -7,7 +7,7 @@ from django.dispatch import receiver
 from django.db.models.signals import pre_delete
 from song.models import Song
 from music_decompose.models import Output, Container
-from music_decompose.services import remove_ndarrays_in_hdf5, get_leaf_subclasses
+from music_decompose.services import remove_ndarrays_in_hdf5, get_leaf_submodels
 
 
 @receiver(pre_delete, sender=Song)
@@ -44,8 +44,8 @@ def remove_data_pre_delete_container(sender, instance, using, **kwargs): # pylin
             [instance._get_dataset_path(field) for field in instance.data_fields],
         )
 
-for model in get_leaf_subclasses(Output):
+for model in get_leaf_submodels(Output):
     pre_delete.connect(remove_audio_file_pre_delete_output, sender=model)
 
-for model in get_leaf_subclasses(Container):
+for model in get_leaf_submodels(Container):
     pre_delete.connect(remove_data_pre_delete_container, sender=model)

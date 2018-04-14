@@ -20,4 +20,4 @@ from .hdf5_io import (
     save_ndarrays_to_hdf5,
     remove_ndarrays_in_hdf5,
 )
-from .get_leaf_subclasses import get_leaf_subclasses
+from .get_leaf_submodels import get_leaf_submodels

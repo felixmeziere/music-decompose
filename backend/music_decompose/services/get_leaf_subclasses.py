@@ -1,11 +1,14 @@
-def get_leaf_subclasses(cls):
+"""
+Recursively get all leaf submodels of a class.
+These are submodels of the class that aren't abstract
+"""
+def get_leaf_submodels(model):
     """
-    Recursively get all leaf subclasses of a class
+    Recursively get all leaf submodels of a model
     """
-
-    all_subclasses = []
-    for subclass in cls.__subclasses__():
-        if not subclass.__subclasses__():
-            all_subclasses.append(subclass)
-        all_subclasses.extend(get_leaf_subclasses(subclass))
-    return all_subclasses
+    all_submodels = []
+    for submodel in model.__subclasses__():
+        if submodel._meta.abstract is False:
+            all_submodels.append(submodel)
+        all_submodels.extend(get_leaf_submodels(submodel))
+    return all_submodels

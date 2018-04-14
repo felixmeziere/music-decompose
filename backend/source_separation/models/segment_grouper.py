@@ -6,11 +6,11 @@ from segmentation.models import Segmenter
 from music_decompose.models import Processor
 from source_separation.sp_functions import group_segments
 
-SEGMENT_GROUPING_METHOD_CHOICES = (
-    ('classic', 'Classic'),
-)
 PARAMETERS = (
     'method',
+)
+SEGMENT_GROUPING_METHOD_CHOICES = (
+    ('classic', 'Classic'),
 )
 
 class SegmentGrouper(Processor):

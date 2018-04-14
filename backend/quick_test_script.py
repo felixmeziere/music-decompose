@@ -1,3 +1,4 @@
+# pylint: skip-file
 from song.models import Song
 from segmentation.models import Segmenter
 import numpy as np

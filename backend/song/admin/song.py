@@ -3,7 +3,6 @@ Admin for Song model.
 """
 from django.contrib import admin
 from song.models import Song, TempoEstimator
-from song.tasks import run_full_flow
 from song.admin.tempo_estimator import TempoEstimatorInline
 from music_decompose.services import audio_file_player
 
@@ -12,7 +11,7 @@ def run_full_flow_for_songs(modeladmin, response, queryset): #pylint: disable=W0
     Run full decomposition flow on selected songs
     """
     for song in queryset:
-        run_full_flow.delay(song.uuid)
+        song.run_full_flow()
 
 def create_classic_tempo_estimator(modeladmin, response, queryset): #pylint: disable=W0613
     """

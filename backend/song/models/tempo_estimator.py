@@ -37,6 +37,6 @@ class TempoEstimator(Processor):
         """
         self.tempo = compute_tempo(self.song.original_file.file.name)
 
-    def process_and_save(self):
+    def _process_and_save(self):
         self.compute_tempo()
         self.save()

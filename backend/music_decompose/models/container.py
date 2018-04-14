@@ -3,7 +3,7 @@ Abstract model to handle storage paths
 """
 import uuid
 from django.db import models
-from music_decompose.services import save_fields_to_hdf5
+from music_decompose.services import save_ndarrays_to_hdf5
 
 class Container(models.Model):
     """
@@ -79,8 +79,28 @@ class Container(models.Model):
         """
         raise NotImplementedError
 
+    @property
+    def path_in_hdf5(self):
+        """
+        Path with data related to Container instance in the hdf5
+        """
+        raise NotImplementedError
+
+    def _get_dataset_path(self, field):
+        """
+        Path to give to dataset inside hdf5 file
+        """
+        return '{0}{1}||{2}'.format(self.path_in_hdf5, field, self.uuid)
+
     def dump_data(self):
         """
         Dump instance data to disk
         """
-        save_fields_to_hdf5(self, self.data_fields)
+        attr_names = [field for field in self.unique_together if field != 'parent']
+        save_ndarrays_to_hdf5(
+            self.data_path,
+            [getattr(self, data_field) for data_field in self.data_fields],
+            [self._get_dataset_path(field) for field in self.data_fields],
+            attr_names,
+            [getattr(self, attr_name) for attr_name in attr_names],
+        )

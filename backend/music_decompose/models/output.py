@@ -54,5 +54,10 @@ class Output(Container): # pylint: disable=W0223
         else:
             raise ValueError('Write Audio File was called but there is no WF for segment {0}'.format(str(self)))
 
+    @property
     def data_path(self):
+        pass
+
+    @property
+    def path_in_hdf5(self):
         pass

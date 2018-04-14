@@ -48,7 +48,7 @@ class SegmentGrouper(Processor):
             self.segmenter.segment_WFs,
         )
 
-    def process_and_save(self):
+    def _process_and_save(self):
         self.compute_segment_groups()
         self.dump_data()
         self.save()

@@ -6,7 +6,7 @@ import librosa as lr
 from django.db import models
 from audiofield.fields import AudioField
 from music_decompose.models import Container
-
+from song.tasks import run_full_flow_for_song
 
 def get_upload_path(instance, _):
     """
@@ -35,13 +35,6 @@ class Song(Container):
         return '{0}'.format(self.title)
 
     @property
-    def param_string(self):
-        """
-        Name containing parameters suitable for paths
-        """
-        return self.sanitized_name
-
-    @property
     def sanitized_name(self):
         """
         Name suitable for file naming
@@ -53,7 +46,11 @@ class Song(Container):
         """
         HDF5 file containing heavy data
         """
-        return 'music_decompose/media/{0}/{0}_WF.hdf5'.format(self.song.sanitized_name)
+        return 'music_decompose/media/{0}/data.hdf5'.format(self.song.sanitized_name)
+
+    @property
+    def path_in_hdf5(self):
+        return '/'
 
     @property
     def media_folder_name(self):
@@ -68,3 +65,13 @@ class Song(Container):
         Import WF from wav file to self.song_WF
         """
         self.song_WF = lr.load(self.original_file.path, self.sample_rate)[0] #pylint: disable=W0201
+
+    def run_full_flow(self, asynch=True):
+        """
+        Call run_full_flow_for_song on this song
+        """
+        if asynch:
+            function = run_full_flow_for_song.delay
+        else:
+            function = run_full_flow_for_song
+        function(self.uuid)

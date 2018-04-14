@@ -5,9 +5,9 @@ from celery import shared_task
 
 
 @shared_task
-def async_process_and_save(processor_uuid, processor_class_name):
+def process_and_save(processor_uuid, processor_class_name):
     """
-    Execute process_and_save in the background
+    Execute _process_and_save in the background
     """
     from music_decompose.models import Processor
     ### Initialise
@@ -21,7 +21,7 @@ def async_process_and_save(processor_uuid, processor_class_name):
 
     try:
         ### Perform the computations
-        processor.process_and_save()
+        processor._process_and_save()
 
         ### End
         processor.processing_status = 'done'

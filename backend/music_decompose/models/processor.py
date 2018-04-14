@@ -4,7 +4,7 @@ Abstract model to perform signal processing and store the Output
 
 from django.db import models
 from music_decompose.constants import STATUS_CHOICES
-from music_decompose.tasks import async_process_and_save
+from music_decompose.tasks import process_and_save
 from .container import Container
 
 class Processor(Container): # pylint: disable=W0223
@@ -53,29 +53,14 @@ class Processor(Container): # pylint: disable=W0223
         """
         HDF5 file containing heavy data
         """
-        return 'music_decompose/media/{0}/{1}/{2}/{3}.hdf5'.format(
-            self.song.sanitized_name,
-            self._meta.app_label,
-            self.step_name_for_paths,
-            self.song.sanitized_name + '-' + self.step_name_for_paths
-        )
+        return self.song.data_path
 
     @property
-    def param_string(self):
-        """
-        Name containing parameters suitable for paths
-        """
-        param_string = ''
-        if self.parent is not None:
-            param_string += '{0}{1}'.format(
-                self.parent.param_string + '||' if self.parent is not None else '',
-                self.step_name_for_paths,
-            )
-        for param in self.unique_together: # pylint: disable=E1133
-            if param != 'parent':
-                param_string += '|{0}-{1}'.format(param, getattr(self, param))
-
-        return param_string
+    def path_in_hdf5(self):
+        return '/{0}/{1}/'.format(
+            self._meta.app_label,
+            self.step_name_for_paths,
+        )
 
     @property
     def media_folder_name(self):
@@ -83,20 +68,20 @@ class Processor(Container): # pylint: disable=W0223
         Folder where all this Processor's-related files will be
         Relative path from /media
         """
-        return '{0}/{1}/{2}/{3}'.format(self.song.sanitized_name, self._meta.app_label, self.step_name_for_paths, self.param_string)
+        return '{0}/{1}/{2}/{3}'.format(self.song.sanitized_name, self._meta.app_label, self.step_name_for_paths, self.uuid)
 
-    def process_and_save(self):
+    def _process_and_save(self):
         """
         Execute the purpose of the processor and save the results
         """
         raise NotImplementedError
 
-    def async_process_and_save(self, asynch=True):
+    def process_and_save(self, asynch=True):
         """
-        Execute process_and_save in the background
+        Execute _process_and_save in the background
         """
         if asynch:
-            function = async_process_and_save.delay
+            function = process_and_save.delay
         else:
-            function = async_process_and_save
+            function = process_and_save
         function(self.uuid, self.__class__.__name__)

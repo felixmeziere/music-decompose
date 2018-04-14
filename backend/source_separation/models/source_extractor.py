@@ -68,7 +68,7 @@ class SourceExtractor(Processor):
             sources.append(source)
         Source.objects.bulk_create(sources)
 
-    def process_and_save(self):
+    def _process_and_save(self):
         self.compute_source_WFs()
         self.create_sources()
         self.dump_data()

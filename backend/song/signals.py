@@ -6,8 +6,8 @@ import os
 from django.dispatch import receiver
 from django.db.models.signals import pre_delete
 from song.models import Song
-from music_decompose.models import Output
-from music_decompose.models import Container
+from music_decompose.models import Output, Container
+from music_decompose.services import remove_ndarrays_in_hdf5, get_leaf_subclasses
 
 
 @receiver(pre_delete, sender=Song)
@@ -21,7 +21,7 @@ def remove_original_file_pre_delete(sender, instance, using, **kwargs): # pylint
             os.remove(instance.original_file.path)
 
 
-def remove_audio_file_pre_delete(sender, instance, using, **kwargs): # pylint: disable=W0613
+def remove_audio_file_pre_delete_output(sender, instance, using, **kwargs): # pylint: disable=W0613
     """
     Ensures the associated audio file is deleted
     when Output instance is deleted
@@ -31,18 +31,21 @@ def remove_audio_file_pre_delete(sender, instance, using, **kwargs): # pylint: d
         if os.path.isdir(dirname):
             shutil.rmtree(dirname)
 
-def remove_data_pre_delete(sender, instance, using, **kwargs): # pylint: disable=W0613
+def remove_data_pre_delete_container(sender, instance, using, **kwargs): # pylint: disable=W0613
     """
-    Ensures all the associated of a Container is deleted
+    Ensures all the associated data of a Container is deleted
     when instance is deleted
     """
     if os.path.isdir(instance.absolute_folder_name):
         shutil.rmtree(instance.absolute_folder_name)
-    if os.path.isfile(instance.data_path):
-        os.remove(instance.data_path)
+    if instance.data_path is not None and os.path.isfile(instance.data_path):
+        remove_ndarrays_in_hdf5(
+            instance.data_path,
+            [instance._get_dataset_path(field) for field in instance.data_fields],
+        )
 
-for model in Output.__subclasses__():
-    pre_delete.connect(remove_audio_file_pre_delete, sender=model)
+for model in get_leaf_subclasses(Output):
+    pre_delete.connect(remove_audio_file_pre_delete_output, sender=model)
 
-for model in Container.__subclasses__():
-    pre_delete.connect(remove_data_pre_delete, sender=model)
+for model in get_leaf_subclasses(Container):
+    pre_delete.connect(remove_data_pre_delete_container, sender=model)

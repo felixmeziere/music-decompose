@@ -1,5 +1,5 @@
 """
-    Mixins to disallow access rights to admin
+Mixins to disallow access rights to admin
 """
 class NoDeleteAdminMixin(object):
     """
@@ -30,7 +30,8 @@ class NoAddAdminMixin(object):
     """
     @staticmethod
     def has_add_permission(*args): #pylint: disable=unused-argument
-        """Gets add persission for object page.
+        """
+        Gets add permission for object page.
         :returns: False
         """
         return False
@@ -41,7 +42,8 @@ class ReadOnlyViewAdminMixin(object):
     """
 
     def get_readonly_fields(self, request, obj=None): #pylint: disable=unused-argument
-        """Get fields to show on object page.
+        """
+        Get fields to show on object page.
         :returns: list of field names
         """
         return self.fields

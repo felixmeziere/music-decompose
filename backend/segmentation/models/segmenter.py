@@ -80,7 +80,7 @@ class Segmenter(Processor):
             segments.append(segment)
         Segment.objects.bulk_create(segments)
 
-    def process_and_save(self):
+    def _process_and_save(self):
         self.compute_segment_starts_IS()
         self.compute_segment_WFs()
         self.create_segments()

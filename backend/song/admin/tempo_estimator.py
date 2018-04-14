@@ -12,7 +12,7 @@ def compute_tempo(modeladmin, response, queryset): #pylint: disable=W0613
     Action to estimate tempo for song
     """
     for tempo_estimator in queryset:
-        tempo_estimator.async_process_and_save()
+        tempo_estimator.process_and_save()
 compute_tempo.short_description = 'Estimate Tempo'
 
 def create_blind_segmenter(modeladmin, response, queryset): #pylint: disable=W0613

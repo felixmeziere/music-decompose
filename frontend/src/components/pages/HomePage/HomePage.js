@@ -26,23 +26,21 @@ class HomePage extends PureComponent {
         <div>{message}</div>
         <div>Loading?</div>
         <div>{loading ? 'Yes' : 'No'}</div>
-        { !songUUID &&
-          <div>
-            <input
-              onChange={e => setSongUploadField('title', e.target.value)}
-              type="text"
-              value={title}
-            />
-            <input
-              onChange={e => setSongUploadField('file', e.target.files[0])}
-              type="file"
-              value={file}
-            />
-            <button onClick={e => this.handleSubmit(e)}>TOTOR panache</button>
-          </div>
-        }
+        <div>
+          <input
+            onChange={e => setSongUploadField('title', e.target.value)}
+            type="text"
+            value={title}
+          />
+          <input
+            onChange={e => setSongUploadField('file', e.target.files[0])}
+            type="file"
+            value={file}
+          />
+          <button onClick={e => this.handleSubmit(e)}>TOTOR panache</button>
+        </div>
         { songUUID &&
-        <h2>{title} (UUID: {songUUID})</h2>
+        <h2>UUID: {songUUID}</h2>
         }
       </div>
     );

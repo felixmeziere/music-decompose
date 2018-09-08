@@ -8,5 +8,5 @@
     "eslint.workingDirectories": [
         "${workspaceRoot}/frontend"
     ],
-    "editor.tabSize": 2
+    "editor.tabSize": 4
 }

@@ -6,7 +6,8 @@ from source_separation.models import SourceExtractor, SegmentGrouper
 from source_separation.admin.source_extractor import SourceExtractorInline
 from music_decompose.admin import ProcessorAdmin, ProcessorInline
 
-def create_classic_source_extractor(modeladmin, response, queryset): #pylint: disable=W0613
+
+def create_classic_source_extractor(modeladmin, response, queryset):  # pylint: disable=W0613
     """
     Action to create a Source Extractor with method classic for this segment grouper
     """
@@ -15,7 +16,10 @@ def create_classic_source_extractor(modeladmin, response, queryset): #pylint: di
             parent=segment_grouper,
             method='classic',
         )
+
+
 create_classic_source_extractor.short_description = 'Create Source Extractor with method classic'
+
 
 class SegmentGrouperInline(ProcessorInline):
     """

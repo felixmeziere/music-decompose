@@ -1,7 +1,6 @@
 """
 Separate the sources and return the segment groups
 """
-import numpy as np
 
 def group_segments(method, segment_WFs):
     """
@@ -9,7 +8,4 @@ def group_segments(method, segment_WFs):
     """
     ### Detect segment groups
     if method == 'classic':
-        return np.array([
-            [1, 25, 50],
-            [3, 45, 60],
-        ])
+        return [[1, 25, 50],[3, 60]]

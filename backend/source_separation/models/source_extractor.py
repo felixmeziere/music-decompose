@@ -14,6 +14,7 @@ SOURCE_SEPARATION_METHOD_CHOICES = (
 PARAMETERS = (
     'method',
 )
+
 class SourceExtractor(Processor):
     """
     Contains all the sources for a song and specific methods to handle them
@@ -46,8 +47,10 @@ class SourceExtractor(Processor):
         """
         _, self.source_WFs = extract_sources_from_segment_groups( # pylint: disable=W0201
             self.method,
-            self.segment_grouper.segment_groups,
-            self.segment_grouper.segmenter.segment_WFs,
+            self.segment_grouper.segment_groups_list,
+            self.segment_grouper.segment_STFTs,
+            self.segment_grouper.hop_length,
+            self.segment_grouper.win_length,
         )
 
     def create_sources(self):
@@ -56,11 +59,12 @@ class SourceExtractor(Processor):
         """
         self.sources.all().delete()
         sources = []
+        segment_groups = self.segment_grouper.segment_groups_list + [[]]
         for i, source_WF in enumerate(self.source_WFs):
             source = Source(
                 ind=i,
                 parent=self,
-                segment_group=list(self.segment_grouper.segment_groups[i]),
+                segment_group=segment_groups[i],
                 WF=source_WF,
             )
             source.write_audio_file()
@@ -72,3 +76,4 @@ class SourceExtractor(Processor):
         self.create_sources()
         self.dump_data()
         self.save()
+# DEBUG BY RUNNIN QUICK TEST SCRIPT AND FIXING ERRORS

@@ -10,3 +10,4 @@ def group_segments(method, segment_WFs):
     ### Detect segment groups
     if method == 'classic':
         return [[1, 25, 50], [3, 60]]
+    return None

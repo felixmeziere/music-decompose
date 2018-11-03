@@ -4,6 +4,7 @@ Admin for Ouptut submodel.
 from music_decompose.admin.container import ContainerInline
 from music_decompose.services import audio_file_player
 
+
 class OutputInline(ContainerInline):
     """
     Inline for Abstract Class Output
@@ -19,10 +20,10 @@ class OutputInline(ContainerInline):
         'audio_file_player',
     )
 
-    ordering = ('ind',)
+    ordering = ('ind', )
     show_change_link = True
 
-    def audio_file_player(self, obj): #pylint: disable=R0201
+    def audio_file_player(self, obj):    #pylint: disable=R0201
         """
         Audio player for output file
         """

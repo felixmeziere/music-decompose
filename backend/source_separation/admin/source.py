@@ -10,9 +10,5 @@ class SourceInline(OutputInline):
     Source Inline
     """
     model = Source
-    fields = OutputInline.fields + (
-        'segment_group',
-    )
-    readonly_fields = OutputInline.readonly_fields + (
-        'segment_group',
-    )
+    fields = OutputInline.fields + ('segment_group', )
+    readonly_fields = OutputInline.readonly_fields + ('segment_group', )

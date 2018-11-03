@@ -5,6 +5,7 @@ import h5py
 import numpy as np
 from music_decompose.services.audio_io import create_directory_for_file_if_needed
 
+
 def load_ndarrays_from_hdf5(file_path, paths_in_hdf5):
     """
     Load paths_in_hdf5 from file_path hdf5 file.
@@ -19,6 +20,7 @@ def load_ndarrays_from_hdf5(file_path, paths_in_hdf5):
                 pass
     return values
 
+
 def remove_ndarrays_in_hdf5(file_path, paths_in_hdf5):
     """
     Within file_path hdf5 file, delete arrays at paths_in_hdf5
@@ -30,6 +32,7 @@ def remove_ndarrays_in_hdf5(file_path, paths_in_hdf5):
                     del data_file[path_in_hdf5]
             except KeyError:
                 pass
+
 
 def save_ndarrays_to_hdf5(file_path, arrays, paths_in_hdf5, attr_names=(), attr_values=()):
     """
@@ -49,5 +52,5 @@ def save_ndarrays_to_hdf5(file_path, arrays, paths_in_hdf5, attr_names=(), attr_
                 for j, attr_name in enumerate(attr_names):
                     attr_value = attr_values[j]
                     if isinstance(attr_value, str):
-                        attr_value = np.string_(attr_value) # pylint: disable=E1101
+                        attr_value = np.string_(attr_value)    # pylint: disable=E1101
                     dataset.attrs.create(attr_name, attr_value)

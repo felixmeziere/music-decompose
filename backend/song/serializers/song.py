@@ -4,10 +4,12 @@ Serializes song metadata and original audio file
 from rest_framework import serializers
 from song.models import Song
 
+
 class SongSerializer(serializers.ModelSerializer):
     """
     Serializer of the Song model
     """
+
     class Meta:
         """
             Django Meta class

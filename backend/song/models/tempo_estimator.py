@@ -6,12 +6,9 @@ from song.models import Song
 from song.sp_functions import compute_tempo
 from music_decompose.models import Processor
 
-TEMPO_ESTIMATION_METHOD_CHOICES = (
-    ('classic', 'Classic'),
-)
-PARAMETERS = (
-    'method',
-)
+TEMPO_ESTIMATION_METHOD_CHOICES = (('classic', 'Classic'), )
+PARAMETERS = ('method', )
+
 
 class TempoEstimator(Processor):
     """
@@ -29,7 +26,7 @@ class TempoEstimator(Processor):
         """
         Django Meta Class
         """
-        unique_together = ('parent',) + PARAMETERS
+        unique_together = ('parent', ) + PARAMETERS
 
     def compute_tempo(self):
         """

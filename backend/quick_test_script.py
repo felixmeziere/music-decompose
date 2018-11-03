@@ -14,7 +14,6 @@ tempo_estimator = TempoEstimator.objects.create(
     method='classic',
 )
 
-
 tempo_estimator.process_and_save(asynch=False)
 segmenter = Segmenter.objects.create(
     parent=tempo_estimator,

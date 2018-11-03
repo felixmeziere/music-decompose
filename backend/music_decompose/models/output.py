@@ -7,7 +7,8 @@ from audiofield.fields import AudioField
 from music_decompose.services import rank_4_audacity, write_WF
 from .container import Container
 
-class Output(Container): # pylint: disable=W0223
+
+class Output(Container):    # pylint: disable=W0223
     """
     Output created by a Processor
     """
@@ -17,15 +18,17 @@ class Output(Container): # pylint: disable=W0223
         Django Meta class
         """
         abstract = True
-        unique_together = ('ind', 'parent',)
+        unique_together = (
+            'ind',
+            'parent',
+        )
 
     # Class attributes
-    data_fields = ('WF',)
+    data_fields = ('WF', )
 
     # DB fields
     ind = models.PositiveIntegerField(verbose_name='Index')
     audio_file = AudioField(blank=True, ext_whitelist=('.wav'), help_text=('Allowed type: .wav'), max_length=500)
-
 
     def __init__(self, *args, **kwargs):
         super(Output, self).__init__(*args, **kwargs)
@@ -49,7 +52,7 @@ class Output(Container): # pylint: disable=W0223
         """
         if self.WF is not None:
             file_name = '{0}.{1}'.format(rank_4_audacity(self.ind), 'wav')
-            write_WF(self.WF, '{0}/{1}'.format(self.absolute_folder_name, file_name), self.parent.song.sample_rate) #pylint: disable=E1101
+            write_WF(self.WF, '{0}/{1}'.format(self.absolute_folder_name, file_name), self.parent.song.sample_rate)    #pylint: disable=E1101
             self.audio_file = '{0}/{1}'.format(self.media_folder_name, file_name)
         else:
             raise ValueError('Write Audio File was called but there is no WF for segment {0}'.format(str(self)))

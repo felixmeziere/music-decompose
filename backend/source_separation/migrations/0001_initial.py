@@ -22,7 +22,11 @@ class Migration(migrations.Migration):
             fields=[
                 ('uuid', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
                 ('added_at', models.DateTimeField(auto_now_add=True)),
-                ('processing_status', models.CharField(choices=[('not_started', 'Not started'), ('pending', 'Pending...'), ('failed', 'Failed'), ('done', 'Done')], default='not_started', max_length=15)),
+                ('processing_status',
+                 models.CharField(
+                     choices=[('not_started', 'Not started'), ('pending', 'Pending...'), ('failed', 'Failed'), ('done', 'Done')],
+                     default='not_started',
+                     max_length=15)),
                 ('method', models.CharField(choices=[('classic', 'Classic')], max_length=10)),
                 ('parent', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='segment_groupers', to='segmentation.Segmenter')),
             ],
@@ -45,9 +49,14 @@ class Migration(migrations.Migration):
             fields=[
                 ('uuid', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
                 ('added_at', models.DateTimeField(auto_now_add=True)),
-                ('processing_status', models.CharField(choices=[('not_started', 'Not started'), ('pending', 'Pending...'), ('failed', 'Failed'), ('done', 'Done')], default='not_started', max_length=15)),
+                ('processing_status',
+                 models.CharField(
+                     choices=[('not_started', 'Not started'), ('pending', 'Pending...'), ('failed', 'Failed'), ('done', 'Done')],
+                     default='not_started',
+                     max_length=15)),
                 ('method', models.CharField(choices=[('classic', 'Classic')], max_length=10)),
-                ('parent', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='source_extractors', to='source_separation.SegmentGrouper')),
+                ('parent',
+                 models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='source_extractors', to='source_separation.SegmentGrouper')),
             ],
         ),
         migrations.AddField(

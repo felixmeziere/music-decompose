@@ -36,7 +36,11 @@ class Migration(migrations.Migration):
             fields=[
                 ('uuid', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
                 ('added_at', models.DateTimeField(auto_now_add=True)),
-                ('processing_status', models.CharField(choices=[('not_started', 'Not started'), ('pending', 'Pending...'), ('failed', 'Failed'), ('done', 'Done')], default='not_started', max_length=15)),
+                ('processing_status',
+                 models.CharField(
+                     choices=[('not_started', 'Not started'), ('pending', 'Pending...'), ('failed', 'Failed'), ('done', 'Done')],
+                     default='not_started',
+                     max_length=15)),
                 ('method', models.CharField(choices=[('blind', 'Blind'), ('flexible', 'Flexible')], max_length=10)),
                 ('n_tempo_lags_per_segment', models.PositiveSmallIntegerField(default=4)),
                 ('parent', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='segmenters', to='song.TempoEstimator')),

@@ -5,6 +5,7 @@ from django.db import models
 from django.contrib.postgres.fields import ArrayField
 from music_decompose.models import Output
 
+
 class Source(Output):
     """
     Holds meta information and audio file on a Source

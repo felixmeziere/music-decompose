@@ -1,5 +1,4 @@
 # pylint: skip-file
-
 """
 Django settings for backend project.
 
@@ -65,9 +64,7 @@ ROOT_URLCONF = 'music_decompose.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [
-            os.path.join(BASE_DIR, 'templates')
-        ],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -103,7 +100,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/1.11/topics/i18n/
 
@@ -117,7 +113,6 @@ USE_L10N = True
 
 USE_TZ = True
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 
@@ -125,15 +120,11 @@ STATIC_URL = '/static/'
 
 # Rest framework configuration
 REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': (
-        'music_decompose.session_authentication.CsrfExemptSessionAuthentication',
-    ),
+    'DEFAULT_AUTHENTICATION_CLASSES': ('music_decompose.session_authentication.CsrfExemptSessionAuthentication', ),
     'DEFAULT_RENDERER_CLASSES': (
         'rest_framework.renderers.JSONRenderer',
         'rest_framework.renderers.BrowsableAPIRenderer',
-    ) if DEBUG else (
-        'rest_framework.renderers.JSONRenderer',
-    ),
+    ) if DEBUG else ('rest_framework.renderers.JSONRenderer', ),
 }
 
 CORS_ORIGIN_WHITELIST = (

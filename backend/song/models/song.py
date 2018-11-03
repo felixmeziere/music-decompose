@@ -8,6 +8,7 @@ from audiofield.fields import AudioField
 from music_decompose.models import Container
 from song.tasks import run_full_flow_for_song
 
+
 def get_upload_path(instance, _):
     """
     Get file upload path that depends on song name
@@ -15,21 +16,18 @@ def get_upload_path(instance, _):
     file_path = '{0}/{1}.wav'.format(instance.sanitized_name, instance.title)
     return file_path
 
+
 class Song(Container):
     """
     Holds meta information on a song and link to files.
     """
     # Class attributes
-    data_fields = ('song_WF',)
+    data_fields = ('song_WF', )
 
     # DB fields
     title = models.CharField(max_length=200, unique=True)
     sample_rate = models.PositiveIntegerField(blank=True, default=44100)
-    original_file = AudioField(upload_to=get_upload_path,
-                               blank=True,
-                               ext_whitelist=('.wav'),
-                               help_text=('Allowed type: .wav'),
-                               max_length=500)
+    original_file = AudioField(upload_to=get_upload_path, blank=True, ext_whitelist=('.wav'), help_text=('Allowed type: .wav'), max_length=500)
 
     def __str__(self):
         return '{0}'.format(self.title)
@@ -67,7 +65,7 @@ class Song(Container):
         """
         Import WF from wav file to self.song_WF
         """
-        self.song_WF = lr.load(self.original_file.path, self.sample_rate)[0] #pylint: disable=W0201
+        self.song_WF = lr.load(self.original_file.path, self.sample_rate)[0]    #pylint: disable=W0201
 
     def run_full_flow(self, asynch=True):
         """

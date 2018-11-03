@@ -7,8 +7,9 @@ class NoDeleteAdminMixin():
     """
     Disallow delete.
     """
+
     @staticmethod
-    def has_delete_permission(*args, **kwargs):  # pylint: disable=unused-argument
+    def has_delete_permission(*args, **kwargs):    # pylint: disable=unused-argument
         """Gets delete persission for object page.
         :returns: False
         """
@@ -30,8 +31,9 @@ class NoAddAdminMixin():
     """
     Disallow Add.
     """
+
     @staticmethod
-    def has_add_permission(*args):  # pylint: disable=unused-argument
+    def has_add_permission(*args):    # pylint: disable=unused-argument
         """
         Gets add permission for object page.
         :returns: False
@@ -44,7 +46,7 @@ class ReadOnlyViewAdminMixin():
     Disallow change by making all fields readonly. Allow view.
     """
 
-    def get_readonly_fields(self, request, obj=None):  # pylint: disable=unused-argument
+    def get_readonly_fields(self, request, obj=None):    # pylint: disable=unused-argument
         """
         Get fields to show on object page.
         :returns: list of field names

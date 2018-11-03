@@ -12,8 +12,7 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
@@ -23,7 +22,8 @@ class Migration(migrations.Migration):
                 ('added_at', models.DateTimeField(auto_now_add=True)),
                 ('title', models.CharField(max_length=200, unique=True)),
                 ('sample_rate', models.PositiveIntegerField(blank=True, default=44100)),
-                ('original_file', audiofield.fields.AudioField(blank=True, help_text='Allowed type: .wav', max_length=500, upload_to=song.models.song.get_upload_path)),
+                ('original_file',
+                 audiofield.fields.AudioField(blank=True, help_text='Allowed type: .wav', max_length=500, upload_to=song.models.song.get_upload_path)),
             ],
             options={
                 'abstract': False,
@@ -34,7 +34,11 @@ class Migration(migrations.Migration):
             fields=[
                 ('uuid', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
                 ('added_at', models.DateTimeField(auto_now_add=True)),
-                ('processing_status', models.CharField(choices=[('not_started', 'Not started'), ('pending', 'Pending...'), ('failed', 'Failed'), ('done', 'Done')], default='not_started', max_length=15)),
+                ('processing_status',
+                 models.CharField(
+                     choices=[('not_started', 'Not started'), ('pending', 'Pending...'), ('failed', 'Failed'), ('done', 'Done')],
+                     default='not_started',
+                     max_length=15)),
                 ('method', models.CharField(choices=[('classic', 'Classic')], max_length=10)),
                 ('tempo', models.FloatField(blank=True, null=True)),
                 ('parent', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='tempo_estimators', to='song.Song')),

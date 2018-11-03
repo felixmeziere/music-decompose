@@ -11,7 +11,7 @@ from music_decompose.services import remove_ndarrays_in_hdf5, get_leaf_submodels
 
 
 @receiver(pre_delete, sender=Song)
-def remove_original_file_pre_delete(sender, instance, using, **kwargs): # pylint: disable=W0613
+def remove_original_file_pre_delete(sender, instance, using, **kwargs):    # pylint: disable=W0613
     """
     Ensures the associated original audio file is deleted
     when Song instance is deleted
@@ -21,7 +21,7 @@ def remove_original_file_pre_delete(sender, instance, using, **kwargs): # pylint
             os.remove(instance.original_file.path)
 
 
-def remove_audio_file_pre_delete_output(sender, instance, using, **kwargs): # pylint: disable=W0613
+def remove_audio_file_pre_delete_output(sender, instance, using, **kwargs):    # pylint: disable=W0613
     """
     Ensures the associated audio file is deleted
     when Output instance is deleted
@@ -31,7 +31,8 @@ def remove_audio_file_pre_delete_output(sender, instance, using, **kwargs): # py
         if os.path.isdir(dirname):
             shutil.rmtree(dirname)
 
-def remove_data_pre_delete_container(sender, instance, using, **kwargs): # pylint: disable=W0613
+
+def remove_data_pre_delete_container(sender, instance, using, **kwargs):    # pylint: disable=W0613
     """
     Ensures all the associated data of a Container is deleted
     when instance is deleted
@@ -43,6 +44,7 @@ def remove_data_pre_delete_container(sender, instance, using, **kwargs): # pylin
             instance.data_path,
             [instance._get_dataset_path(field) for field in instance.data_fields],
         )
+
 
 for model in get_leaf_submodels(Output):
     pre_delete.connect(remove_audio_file_pre_delete_output, sender=model)

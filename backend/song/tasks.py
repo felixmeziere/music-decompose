@@ -3,6 +3,7 @@ Celery tasks: functions runnable on separate async worker
 """
 from celery import shared_task
 
+
 @shared_task
 def run_full_flow_for_song(song_uuid):
     """

@@ -14,16 +14,15 @@ PARAMETERS = (
     'hop_length',
     'win_length',
 )
-SEGMENT_GROUPING_METHOD_CHOICES = (
-    ('classic', 'Classic'),
-)
+SEGMENT_GROUPING_METHOD_CHOICES = (('classic', 'Classic'), )
+
 
 class SegmentGrouper(Processor):
     """
     Contains the segment groups for a song
     """
     # Class attributes
-    data_fields = ('segment_STFTs',)
+    data_fields = ('segment_STFTs', )
     parameters = PARAMETERS
 
     # DB fields
@@ -37,7 +36,7 @@ class SegmentGrouper(Processor):
         """
         Django Meta Class
         """
-        unique_together = ('parent',) + PARAMETERS
+        unique_together = ('parent', ) + PARAMETERS
 
     @property
     def segmenter(self):
@@ -50,7 +49,7 @@ class SegmentGrouper(Processor):
         """
         Get and store segment STFTs from segment WFs
         """
-        self.segment_STFTs = WFs_to_STFTs(  # pylint: disable=W0201
+        self.segment_STFTs = WFs_to_STFTs(    # pylint: disable=W0201
             self.segmenter.segment_WFs,
             self.n_fft,
             self.hop_length,
@@ -62,7 +61,7 @@ class SegmentGrouper(Processor):
         Given self.segmenter.segment_WFs, compute self.segment_groups containing
         the segment groups
         """
-        segment_groups = group_segments( # pylint: disable=W0201
+        segment_groups = group_segments(    # pylint: disable=W0201
             self.method,
             self.segmenter.segment_WFs,
         )

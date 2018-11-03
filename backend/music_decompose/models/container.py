@@ -5,6 +5,7 @@ import uuid
 from django.db import models
 from music_decompose.services import save_ndarrays_to_hdf5
 
+
 class Container(models.Model):
     """
     Holds data and where that data is stored
@@ -13,8 +14,7 @@ class Container(models.Model):
     data_fields = ()
 
     # Django DB fields
-    uuid = models.UUIDField(
-        primary_key=True, default=uuid.uuid4, editable=False)
+    uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     added_at = models.DateTimeField(auto_now_add=True)
     parent = None
 

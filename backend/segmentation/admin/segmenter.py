@@ -8,7 +8,8 @@ from source_separation.models import SegmentGrouper
 from source_separation.admin import SegmentGrouperInline
 from music_decompose.admin import ProcessorAdmin, ProcessorInline
 
-def create_classic_segment_grouper(modeladmin, response, queryset): #pylint: disable=W0613
+
+def create_classic_segment_grouper(modeladmin, response, queryset):    #pylint: disable=W0613
     """
     Action to create a segment grouper with method classic for this segmenter
     """
@@ -17,6 +18,8 @@ def create_classic_segment_grouper(modeladmin, response, queryset): #pylint: dis
             parent=segmenter,
             method='classic',
         )
+
+
 create_classic_segment_grouper.short_description = 'Create Segment Grouper with method classic'
 
 
@@ -32,5 +35,8 @@ class SegmenterAdmin(ProcessorAdmin):
     """
     Admin for Segmenter model.
     """
-    inlines = (SegmentGrouperInline, SegmentInline, )
-    actions = ProcessorAdmin.actions + (create_classic_segment_grouper,)
+    inlines = (
+        SegmentGrouperInline,
+        SegmentInline,
+    )
+    actions = ProcessorAdmin.actions + (create_classic_segment_grouper, )

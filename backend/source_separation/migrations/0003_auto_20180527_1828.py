@@ -19,16 +19,13 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='SegmentGroup',
             fields=[
-                ('uuid', models.UUIDField(default=uuid.uuid4,
-                                          editable=False, primary_key=True, serialize=False)),
+                ('uuid', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
                 ('added_at', models.DateTimeField(auto_now_add=True)),
-                ('audio_file', audiofield.fields.AudioField(blank=True,
-                                                            help_text='Allowed type: .wav', max_length=500, upload_to='')),
+                ('audio_file', audiofield.fields.AudioField(blank=True, help_text='Allowed type: .wav', max_length=500, upload_to='')),
                 ('ind', models.PositiveSmallIntegerField()),
-                ('segment_group', django.contrib.postgres.fields.ArrayField(
-                    base_field=models.IntegerField(null=True), null=True, size=None)),
-                ('parent', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE,
-                                             related_name='segment_groups', to='source_separation.SegmentGrouper')),
+                ('segment_group', django.contrib.postgres.fields.ArrayField(base_field=models.IntegerField(null=True), null=True, size=None)),
+                ('parent', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='segment_groups',
+                                             to='source_separation.SegmentGrouper')),
             ],
             options={
                 'abstract': False,

@@ -30,7 +30,6 @@ class Migration(migrations.Migration):
         ),
         migrations.AlterUniqueTogether(
             name='segmentgrouper',
-            unique_together={('parent', 'method', 'n_fft',
-                              'hop_length', 'win_length')},
+            unique_together={('parent', 'method', 'n_fft', 'hop_length', 'win_length')},
         ),
     ]

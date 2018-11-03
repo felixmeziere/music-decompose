@@ -85,9 +85,9 @@ class generate_knockoff(object):
     '''
 
     def __init__(self, X, n_clustersKN, method_diagonal='SDP_diagonal', multiKN=1):
-        self.X = X                                  # PRINCIPAL INPUT : dataset X
-        self.n_samples = self.X.shape[0]            # computed parameter from X
-        self.dim = self.X.shape[1]                  # computed parameter from X
+        self.X = X    # PRINCIPAL INPUT : dataset X
+        self.n_samples = self.X.shape[0]    # computed parameter from X
+        self.dim = self.X.shape[1]    # computed parameter from X
         self.n_clustersKN = n_clustersKN
         self.multiKN = multiKN
 
@@ -105,8 +105,7 @@ class generate_knockoff(object):
         for cluster in range(self.n_clustersKN):
             self.diagonal_clusters[str(cluster)],
             self.SigmaInvDiag_clusters[str(cluster)],
-            self.SigmaChol_clusters[str(cluster)] = self._KN_distribution(
-                cov_matrix=self.EM.covariances_[cluster, ], method_diagonal=method_diagonal)
+            self.SigmaChol_clusters[str(cluster)] = self._KN_distribution(cov_matrix=self.EM.covariances_[cluster, ], method_diagonal=method_diagonal)
 
     def _compute_knockoff(self):
         '''
@@ -124,34 +123,31 @@ class generate_knockoff(object):
         Docstring please
         '''
         multiKN_par = (self.multiKN + 1) / self.multiKN
-        diagonal = create_diagonal(
-            cov_matrix=cov_matrix, multiKN_par=multiKN_par, method_diagonal=method_diagonal)
+        diagonal = create_diagonal(cov_matrix=cov_matrix, multiKN_par=multiKN_par, method_diagonal=method_diagonal)
         SigmaInvDiag = np.linalg.solve(cov_matrix, diagonal)
         Sigma_k = 2 * diagonal - diagonal.dot(SigmaInvDiag)
-        Sigma_k = np.tile(Sigma_k - diagonal, reps=(self.multiKN, self.multiKN)
-                          ) + np.diag(np.tile(np.diag(diagonal), reps=self.multiKN))
-        SigmaChol = np.linalg.cholesky(
-            Sigma_k + (1e-7) * np.identity(self.dim * self.multiKN)).T
+        Sigma_k = np.tile(Sigma_k - diagonal, reps=(self.multiKN, self.multiKN)) + np.diag(np.tile(np.diag(diagonal), reps=self.multiKN))
+        SigmaChol = np.linalg.cholesky(Sigma_k + (1e-7) * np.identity(self.dim * self.multiKN)).T
         return np.diag(diagonal), SigmaInvDiag, SigmaChol
 
     def _sample_KN(self, X_ind):
         '''
         Docstring please
         '''
-        cat_post = [self.EM.weights_[cluster, ] * sp.stats.multivariate_normal.pdf(x=X_ind, mean=self.EM.means_[cluster, ], cov=self.EM.covariances_[cluster, ])
-                    for cluster in range(self.n_clustersKN)]
-        clusterKN = np.random.choice(
-            self.n_clustersKN, size=1, p=normalize(cat_post))[0]
+        cat_post = [
+            self.EM.weights_[cluster, ] * sp.stats.multivariate_normal.pdf(x=X_ind, mean=self.EM.means_[cluster, ], cov=self.EM.covariances_[cluster, ])
+            for cluster in range(self.n_clustersKN)
+        ]
+        clusterKN = np.random.choice(self.n_clustersKN, size=1, p=normalize(cat_post))[0]
         X_KN = np.tile(
-            X_ind -
-            np.matmul(X_ind - self.EM.means_[clusterKN, ],
-                      self.SigmaInvDiag_clusters[str(clusterKN)]),
+            X_ind - np.matmul(X_ind - self.EM.means_[clusterKN, ], self.SigmaInvDiag_clusters[str(clusterKN)]),
             reps=self.multiKN,
         ) + np.matmul(
             np.random.normal(size=self.dim * self.multiKN),
             self.SigmaChol_clusters[str(clusterKN)],
         )
         return X_KN, clusterKN
+
     ####################################
 
 
@@ -162,10 +158,8 @@ def generate_mixture_par(n_clusters, dim, spread_means=10, extra_cor=0):
     parameters = {}
     parameters['cluster_prop'] = normalize(np.random.poisson(10, n_clusters))
     for cluster in range(n_clusters):
-        parameters['mean' + str(cluster)] = np.random.multivariate_normal(
-            mean=np.zeros(dim), cov=spread_means * np.identity(dim))
-        parameters['cov' + str(cluster)] = datasets.make_spd_matrix(
-            n_dim=dim) + extra_cor * np.ones(shape=(dim, dim))
+        parameters['mean' + str(cluster)] = np.random.multivariate_normal(mean=np.zeros(dim), cov=spread_means * np.identity(dim))
+        parameters['cov' + str(cluster)] = datasets.make_spd_matrix(n_dim=dim) + extra_cor * np.ones(shape=(dim, dim))
     return parameters
 
 
@@ -175,13 +169,11 @@ def generate_response(X, **params):
     '''
     Y = []
     funct = params['funct']
-    pol_deg, trigo, feature_transform = params.get('pol_deg', 1), params.get(
-        'trigo', False), params.get('feature_transform', None)
+    pol_deg, trigo, feature_transform = params.get('pol_deg', 1), params.get('trigo', False), params.get('feature_transform', None)
 
     expanded_X = [X]
     if pol_deg > 1:
-        expanded_X.append(np.stack([np.prod(X[:, i], axis=1) for i in itertools.product(
-            range(X.shape[1]), repeat=pol_deg)], axis=1))
+        expanded_X.append(np.stack([np.prod(X[:, i], axis=1) for i in itertools.product(range(X.shape[1]), repeat=pol_deg)], axis=1))
     if trigo:
         expanded_X.append(np.cos(X))
     if feature_transform is not None:
@@ -201,14 +193,11 @@ def get_W(importance_scores, multiKN, antisym, **params_kn):
     '''
     dim = int(len(importance_scores) / (multiKN + 1))
     if antisym == 'difference':
-        W = list(map(lambda x, y: x - y,
-                     importance_scores[0:dim], importance_scores[dim:2 * dim]))
+        W = list(map(lambda x, y: x - y, importance_scores[0:dim], importance_scores[dim:2 * dim]))
     elif (antisym == 'multiKN_difference') and (multiKN > 1):
-        W = np.sum([list(map(lambda x, y: x - y, importance_scores[0:dim],
-                             importance_scores[(k + 1) * dim:(k + 2) * dim])) for k in range(multiKN)], axis=0)
+        W = np.sum([list(map(lambda x, y: x - y, importance_scores[0:dim], importance_scores[(k + 1) * dim:(k + 2) * dim])) for k in range(multiKN)], axis=0)
     elif (antisym == 'multiKN_rank') and (multiKN > 1):
-        W = np.array([(sp.stats.rankdata([importance_scores[i + k * dim]
-                                          for k in range(multiKN + 1)])[0] - (multiKN + 1) / 2) for i in range(dim)])
+        W = np.array([(sp.stats.rankdata([importance_scores[i + k * dim] for k in range(multiKN + 1)])[0] - (multiKN + 1) / 2) for i in range(dim)])
     else:
         raise ValueError("No other antisymmetric functions are implemented")
     return W
@@ -247,34 +236,27 @@ class knockoff_procedure(object):
             reg.fit(full_covariate, Y)
             self.importance_scores = abs(reg.coef_)
         elif method == 'ScoresSwapLasso':
-            assert(len(params_kn['steps_lambda']) == 1)
-            self.importance_scores = ScoresSwapLasso(
-                full_covariate, Y, **params_kn)
+            assert (len(params_kn['steps_lambda']) == 1)
+            self.importance_scores = ScoresSwapLasso(full_covariate, Y, **params_kn)
         elif method == 'NNClassifierAccuracyMultiKN':
-            self.importance_scores = NNClassifierAccuracyMultiKN(
-                full_covariate, Y, dim, self.multiKN, **params_kn)
+            self.importance_scores = NNClassifierAccuracyMultiKN(full_covariate, Y, dim, self.multiKN, **params_kn)
         else:
-            raise ValueError(
-                "No other importance score methods are implemented")
+            raise ValueError("No other importance score methods are implemented")
 
     def get_selections(self, antisym, **params_kn):
         '''
         Docstring please
         '''
-        self.W = get_W(importance_scores=self.importance_scores,
-                       multiKN=self.multiKN, antisym=antisym, **params_kn)
+        self.W = get_W(importance_scores=self.importance_scores, multiKN=self.multiKN, antisym=antisym, **params_kn)
         sorted_abs_W, ratios = np.sort(np.absolute(self.W)), []
         for index in range(self.dim):
-            above = np.count_nonzero(
-                [x >= sorted_abs_W[index] for x in self.W])
-            below = np.count_nonzero(
-                [x <= - sorted_abs_W[index] for x in self.W])
+            above = np.count_nonzero([x >= sorted_abs_W[index] for x in self.W])
+            below = np.count_nonzero([x <= -sorted_abs_W[index] for x in self.W])
             ratios.append(((self.offset + below) / np.maximum(above, 0.001)))
         if np.sum([ratio < self.FDR for ratio in ratios]) == 0:
             self.threshold, self.selected = None, []
         else:
-            self.threshold = sorted_abs_W[np.min(
-                [ind for ind in range(self.dim) if ratios[ind] < self.FDR])]
+            self.threshold = sorted_abs_W[np.min([ind for ind in range(self.dim) if ratios[ind] < self.FDR])]
             self.selected = np.where(self.W >= self.threshold)[0]
 
         if params_kn.get('plotting_scores', False):
@@ -294,8 +276,7 @@ class generate_data(generate_knockoff, knockoff_procedure):
         self.n_clusters = n_clusters
         self.dim = dim
 
-        self.parameters_gen = generate_mixture_par(
-            n_clusters=self.n_clusters, dim=self.dim)
+        self.parameters_gen = generate_mixture_par(n_clusters=self.n_clusters, dim=self.dim)
         self.parameters_kn = {}
 
         self.generate_X()
@@ -305,11 +286,10 @@ class generate_data(generate_knockoff, knockoff_procedure):
         Docstring please
         '''
         self.X = np.empty((self.n_samples, self.dim))
-        self.assignments = np.random.choice(
-            self.n_clusters, size=self.n_samples, p=self.parameters_gen['cluster_prop'])
+        self.assignments = np.random.choice(self.n_clusters, size=self.n_samples, p=self.parameters_gen['cluster_prop'])
         for i in range(self.n_samples):
-            self.X[i, :] = np.random.multivariate_normal(mean=self.parameters_gen['mean' + str(
-                self.assignments[i])], cov=self.parameters_gen['cov' + str(self.assignments[i])])
+            self.X[i, :] = np.random.multivariate_normal(
+                mean=self.parameters_gen['mean' + str(self.assignments[i])], cov=self.parameters_gen['cov' + str(self.assignments[i])])
 
     def generate_Y(self, non_null, **params_gen):
         '''
@@ -323,21 +303,18 @@ class generate_data(generate_knockoff, knockoff_procedure):
         Docstring please
         '''
         self.parameters_kn['n_clustersKN'], self.parameters_kn['multiKN'] = n_clustersKN, multiKN
-        generate_knockoff.__init__(
-            self, X=self.X, n_clustersKN=n_clustersKN, multiKN=multiKN)
+        generate_knockoff.__init__(self, X=self.X, n_clustersKN=n_clustersKN, multiKN=multiKN)
 
     def generate_selection(self, **params_kn):
         '''
         Docstring please
         '''
-        knockoff_procedure.__init__(self, FDR=params_kn.get('FDR', 0.2), offset=params_kn.get(
-            'offset', 1), multiKN=self.parameters_kn['multiKN'])
+        knockoff_procedure.__init__(self, FDR=params_kn.get('FDR', 0.2), offset=params_kn.get('offset', 1), multiKN=self.parameters_kn['multiKN'])
         method = params_kn.get('method', None)
         antisym = params_kn.get('antisym', None)
         if method is not None:
             self.parameters_kn['method'] = method
-            self.get_importance_scores(
-                X=self.X, X_KN=self.X_KN, Y=self.Y, **params_kn)
+            self.get_importance_scores(X=self.X, X_KN=self.X_KN, Y=self.Y, **params_kn)
             if antisym is not None:
                 self.parameters_kn['antisym'] = antisym
                 self.get_selections(**params_kn)
@@ -355,13 +332,12 @@ def create_NN(input_dim, n_classes, **params):
     '''
     n_layers, n_nodes = params.get('n_layers', 3), params.get('n_nodes', 200)
     model = Sequential()
-    model.add(Dense(n_nodes, input_shape=(input_dim,)))
+    model.add(Dense(n_nodes, input_shape=(input_dim, )))
     for _ in range(n_layers):
         model.add(Dense(n_nodes, activation='relu'))
         model.add(Dropout(0.7))
     model.add(Dense(n_classes, activation='softmax'))
-    model.compile(loss='categorical_crossentropy',
-                  optimizer='adam', metrics=['accuracy'])
+    model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
     return model
 
 
@@ -370,10 +346,8 @@ def NNClassifier(X_train, Y_train, **params):
     Docstring please
     '''
     verbose = params.get('verbose', 0)
-    classifier = create_NN(input_dim=X_train.shape[1], n_classes=len(
-        np.unique(Y_train)), **params)
-    classifier.fit(X_train, Y_train, batch_size=256,
-                   epochs=params.get('n_epochs', 100), verbose=verbose)
+    classifier = create_NN(input_dim=X_train.shape[1], n_classes=len(np.unique(Y_train)), **params)
+    classifier.fit(X_train, Y_train, batch_size=256, epochs=params.get('n_epochs', 100), verbose=verbose)
     return classifier
 
 
@@ -387,10 +361,8 @@ def ScoresSwapLasso(full_covariate, Y, **params):
     le.fit(Y)
     Y_categ = np_utils.to_categorical(le.transform(Y), len(le.classes_))
 
-    classifier = params.get('classifier', NNClassifier(
-        X_train=full_covariate, Y_train=Y_categ, **params))
-    initial_accuracy = classifier.evaluate(
-        full_covariate, Y_categ, verbose=verbose)[1]
+    classifier = params.get('classifier', NNClassifier(X_train=full_covariate, Y_train=Y_categ, **params))
+    initial_accuracy = classifier.evaluate(full_covariate, Y_categ, verbose=verbose)[1]
 
     steps_lambda = params.get('steps_lambda', np.arange(0, 5, 0.5))
     importance_scores = np.zeros((2 * dim, len(steps_lambda)))
@@ -398,8 +370,7 @@ def ScoresSwapLasso(full_covariate, Y, **params):
     for index_lambda, cur_lambda in enumerate(steps_lambda):
         for covariate in range(2 * dim):
             full_covariate_swap_local = np.copy(full_covariate)
-            new_column = (full_covariate[:, (covariate + dim) % (2 * dim)] -
-                          full_covariate[:, covariate]) * cur_lambda + full_covariate[:, covariate]
+            new_column = (full_covariate[:, (covariate + dim) % (2 * dim)] - full_covariate[:, covariate]) * cur_lambda + full_covariate[:, covariate]
             full_covariate_swap_local[:, covariate] = new_column
             importance_scores[covariate, index_lambda] = initial_accuracy - \
                 classifier.evaluate(full_covariate_swap_local,
@@ -412,18 +383,14 @@ def path_performance(importance_scores, non_null, dim, FDR, offset, steps_lambda
     Docstring please
     '''
     n_steps = len(steps_lambda)
-    assert (importance_scores.shape[0] == 2 *
-            dim) and (importance_scores.shape[1] == n_steps)
+    assert (importance_scores.shape[0] == 2 * dim) and (importance_scores.shape[1] == n_steps)
     full_W = importance_scores[0:dim, :] - importance_scores[dim:2 * dim, :]
-    area = np.array([np.trapz(full_W[:, :L + 1], x=steps_lambda[:L + 1])
-                     for L in range(n_steps)])
+    area = np.array([np.trapz(full_W[:, :L + 1], x=steps_lambda[:L + 1]) for L in range(n_steps)])
     results = np.zeros((2, 2, n_steps))
     rejections = {}
     if plot_path:
-        plot_scores_Lasso(
-            W=full_W, steps_lambda=steps_lambda, non_null=non_null)
-        plot_scores_Lasso(
-            W=area.T, steps_lambda=steps_lambda, non_null=non_null)
+        plot_scores_Lasso(W=full_W, steps_lambda=steps_lambda, non_null=non_null)
+        plot_scores_Lasso(W=area.T, steps_lambda=steps_lambda, non_null=non_null)
     for i, cur_lambda in enumerate(steps_lambda):
         knock = knockoff_procedure(verbose=False)
         knock.FDR = FDR
@@ -431,15 +398,13 @@ def path_performance(importance_scores, non_null, dim, FDR, offset, steps_lambda
         knock.W = full_W[:, i]
         knock._get_threshold(offset=offset)
         knock._get_selections()
-        results[0, :, i] = knockoff_performance(
-            selected=knock.selected, true=non_null, verbose=False)
+        results[0, :, i] = knockoff_performance(selected=knock.selected, true=non_null, verbose=False)
         knock.W = area.T[:, i]
         knock._get_threshold(offset=offset)
         knock._get_selections()
         if cur_lambda == 10:
             rejections[str(i)] = knock.selected
-        results[1, :, i] = knockoff_performance(
-            selected=knock.selected, true=non_null, verbose=False)
+        results[1, :, i] = knockoff_performance(selected=knock.selected, true=non_null, verbose=False)
     return results, rejections
 
 

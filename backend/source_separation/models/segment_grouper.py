@@ -65,6 +65,7 @@ class SegmentGrouper(Processor):
             self.method,
             self.segmenter.segment_WFs,
         )
+        SegmentGroup.objects.filter(parent=self).delete()
         SegmentGroup.objects.bulk_create([SegmentGroup(parent=self, ind=i, segment_group=segment_group) for i, segment_group in enumerate(segment_groups)])
 
     def _process_and_save(self):

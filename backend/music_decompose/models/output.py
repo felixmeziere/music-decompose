@@ -50,7 +50,7 @@ class Output(Container):    # pylint: disable=W0223
         """
         Create or overwrite audio file and attach to instance
         """
-        if self.WF is not None:
+        if self.WF is not None:    # pylint: disable=E1101
             file_name = '{0}.{1}'.format(rank_4_audacity(self.ind), 'wav')
             write_WF(self.WF, '{0}/{1}'.format(self.absolute_folder_name, file_name), self.parent.song.sample_rate)    #pylint: disable=E1101
             self.audio_file = '{0}/{1}'.format(self.media_folder_name, file_name)

@@ -9,7 +9,7 @@ celery==4.2.1
 cffi==1.11.4
 cycler==0.10.0
 decorator==4.2.1
-Django==2.1.1
+Django==2.0.1
 django-audiofield==0.10.0
 django-celery==3.2.2
 django-celery-results==1.0.1
@@ -31,3 +31,4 @@ h5py==2.8.0
 librosa==0.6.2
 SoundFile==0.10.2
 yapf==0.24.0
+PyWavelets==1.0.1

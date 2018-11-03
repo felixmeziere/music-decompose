@@ -4,6 +4,7 @@ Admin for Segmenter model.
 from django.contrib import admin
 from source_separation.models import SourceExtractor, SegmentGrouper
 from source_separation.admin.source_extractor import SourceExtractorInline
+from source_separation.admin.segment_group import SegmentGroupInline
 from music_decompose.admin import ProcessorAdmin, ProcessorInline
 
 
@@ -34,6 +35,6 @@ class SegmentGrouperAdmin(ProcessorAdmin):
     Admin for SegmenterGrouper model.
     """
     actions = ProcessorAdmin.actions + (create_classic_source_extractor, )
-    inlines = (SourceExtractorInline, )
-    fields = ProcessorAdmin.fields + ('segment_groups', )
-    readonly_fields = ProcessorAdmin.readonly_fields + ('segment_groups', )
+    inlines = (SourceExtractorInline, SegmentGroupInline)
+    fields = ProcessorAdmin.fields
+    readonly_fields = ProcessorAdmin.readonly_fields

@@ -8,5 +8,8 @@
     "eslint.workingDirectories": [
         "${workspaceRoot}/frontend"
     ],
-    "editor.tabSize": 4
+    "editor.tabSize": 4,
+    "python.formatting.provider": "yapf",
+    "python.formatting.yapfPath": "${workspaceRoot}/venv/bin/yapf",
+    "python.formatting.yapfArgs": []
 }

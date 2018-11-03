@@ -25,3 +25,9 @@ six==1.11.0
 vine==1.1.4
 wrapt==1.10.11
 pylint==2.1.1
+pylint-django==2.0.2
+pywt==1.0.6
+h5py==2.8.0
+librosa==0.6.2
+SoundFile==0.10.2
+yapf==0.24.0

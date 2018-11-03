@@ -15,6 +15,7 @@ PARAMETERS = (
     'method',
 )
 
+
 class SourceExtractor(Processor):
     """
     Contains all the sources for a song and specific methods to handle them
@@ -24,8 +25,10 @@ class SourceExtractor(Processor):
     parameters = PARAMETERS
 
     # DB fields
-    parent = models.ForeignKey(SegmentGrouper, on_delete=models.CASCADE, related_name='source_extractors')
-    method = models.CharField(max_length=10, choices=SOURCE_SEPARATION_METHOD_CHOICES)
+    parent = models.ForeignKey(
+        SegmentGrouper, on_delete=models.CASCADE, related_name='source_extractors')
+    method = models.CharField(
+        max_length=10, choices=SOURCE_SEPARATION_METHOD_CHOICES)
 
     class Meta:
         """
@@ -45,7 +48,7 @@ class SourceExtractor(Processor):
         Given self.segment_grouper.segment_groups, compute self.source_WFs containing
         as rows the waveform of every source
         """
-        _, self.source_WFs = extract_sources_from_segment_groups( # pylint: disable=W0201
+        _, self.source_WFs = extract_sources_from_segment_groups(  # pylint: disable=W0201
             self.method,
             self.segment_grouper.segment_groups_list,
             self.segment_grouper.segment_STFTs,

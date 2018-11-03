@@ -1,4 +1,4 @@
-#  pylint: skip-file
+# pylint: skip-file
 from song.models import Song, TempoEstimator
 from segmentation.models import Segmenter
 from source_separation.models import SegmentGrouper, SourceExtractor
@@ -13,6 +13,8 @@ tempo_estimator = TempoEstimator.objects.create(
     parent=song,
     method='classic',
 )
+
+
 tempo_estimator.process_and_save(asynch=False)
 segmenter = Segmenter.objects.create(
     parent=tempo_estimator,
@@ -31,7 +33,6 @@ source_extractor = SourceExtractor.objects.create(
     method='classic',
 )
 
-#  pylint: skip-file
 from song.models import Song, TempoEstimator
 from segmentation.models import Segmenter
 from source_separation.models import SegmentGrouper, SourceExtractor

@@ -4,13 +4,14 @@ Return rest and source segment STFTs.
 """
 import numpy as np
 
+
 def apply_REPET_mask(
         segment_STFTs,
         mask,
         upper_magnet_threshold,
         lower_magnet_threshold,
         hard_threshold,
-    ):
+):
     """
     Apply mask to segment STFTs, separating the sources.
     Return rest and source segment STFTs.

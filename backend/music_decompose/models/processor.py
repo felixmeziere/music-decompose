@@ -7,7 +7,8 @@ from music_decompose.constants import STATUS_CHOICES
 from music_decompose.tasks import process_and_save
 from .container import Container
 
-class Processor(Container): # pylint: disable=W0223
+
+class Processor(Container):    # pylint: disable=W0223
     """
     Container that processes an input and creates Outputs.
     """
@@ -36,7 +37,7 @@ class Processor(Container): # pylint: disable=W0223
 
     def __str__(self):
         pretty_params = ''
-        for param in self.unique_together: # pylint: disable=E1133
+        for param in self.unique_together:    # pylint: disable=E1133
             if param != 'parent':
                 pretty_params += ' - {0}: {1}'.format(param, getattr(self, param))
         return '{0} for Song: {1}{2}'.format(self.__class__.__name__, self.song, pretty_params)

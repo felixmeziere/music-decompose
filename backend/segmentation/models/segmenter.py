@@ -17,6 +17,7 @@ PARAMETERS = (
     'n_tempo_lags_per_segment',
 )
 
+
 class Segmenter(Processor):
     """
     Contains all the segments for a song and specific methods to handle them
@@ -34,13 +35,17 @@ class Segmenter(Processor):
         """
         Django Meta Class
         """
-        unique_together = ('parent', 'method', 'n_tempo_lags_per_segment',)
+        unique_together = (
+            'parent',
+            'method',
+            'n_tempo_lags_per_segment',
+        )
 
     def compute_segment_starts_IS(self):
         """
         Detect segment limits
         """
-        self.segment_starts_IS = compute_segmentation( # pylint: disable=W0201
+        self.segment_starts_IS = compute_segmentation(    # pylint: disable=W0201
             self.method,
             self.song.song_WF,
             self.song.sample_rate,
@@ -55,10 +60,10 @@ class Segmenter(Processor):
         """
         n_segments = len(self.segment_starts_IS)
         segment_length = self.segment_starts_IS[1] - self.segment_starts_IS[0]
-        self.segment_WFs = np.zeros((n_segments, segment_length)) # pylint: disable=W0201
-        for i in range(n_segments-1):
+        self.segment_WFs = np.zeros((n_segments, segment_length))    # pylint: disable=W0201
+        for i in range(n_segments - 1):
             start = self.segment_starts_IS[i]
-            end = self.segment_starts_IS[i+1]
+            end = self.segment_starts_IS[i + 1]
             self.segment_WFs[i, :end - start] = self.song.song_WF[start:end]
 
     def create_segments(self):
@@ -73,7 +78,7 @@ class Segmenter(Processor):
                 parent=self,
                 length_in_samples=len(segment_WF),
                 start_position_in_samples=self.segment_starts_IS[i],
-                end_position_in_samples=self.segment_starts_IS[i+1] if i < len(self.segment_WFs) - 1 else self.segment_starts_IS[i] + len(segment_WF),
+                end_position_in_samples=self.segment_starts_IS[i + 1] if i < len(self.segment_WFs) - 1 else self.segment_starts_IS[i] + len(segment_WF),
                 WF=segment_WF,
             )
             segment.write_audio_file()

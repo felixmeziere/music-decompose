@@ -5,12 +5,16 @@ from django.contrib import admin
 from music_decompose.services import get_link_to_modeladmin
 from music_decompose.services import NoDeleteAdminMixin, NoAddAdminMixin
 
+
 # @admin.register(Container)
 class ContainerAdmin(admin.ModelAdmin):
     """
     Admin for Container Abstract model.
     """
-    ordering = ('parent', '-added_at',)
+    ordering = (
+        'parent',
+        '-added_at',
+    )
     fields = (
         'uuid',
         'added_at',
@@ -31,21 +35,25 @@ class ContainerAdmin(admin.ModelAdmin):
         'processing_status',
     )
     actions = ()
-    def pretty_song(self, obj): #pylint: disable=R0201
+
+    def pretty_song(self, obj):    #pylint: disable=R0201
         """
         Song object link
         """
         return get_link_to_modeladmin(str(obj.song), 'song_song', obj.song.uuid)
+
     pretty_song.short_description = 'Song'
 
-    def pretty_parent_container(self, obj): #pylint: disable=R0201
+    def pretty_parent_container(self, obj):    #pylint: disable=R0201
         """
         Parent Container object link
         """
         if not obj.parent:
             return 'No Parent'
         return get_link_to_modeladmin(str(obj.parent), obj.parent._meta.db_table, obj.parent.uuid)
+
     pretty_parent_container.short_description = 'Parent Container'
+
 
 class ContainerInline(NoDeleteAdminMixin, NoAddAdminMixin, admin.TabularInline):
     """

@@ -5,8 +5,6 @@ import struct
 import numpy as np
 from scipy import signal
 import pywt
-
-
 """
 References:
 Discrete wavelet transform (DWT) based beat detection paper: http://soundlab.cs.princeton.edu/publications/2001_amta_aadwt.pdf
@@ -26,7 +24,6 @@ def wavLoad(fname):
     wav = wave.open(fname, 'r')
     params = (nchannels, sampwidth, framerate, nframes, _, _) = wav.getparams()
     frames = wav.readframes(nframes * nchannels)
-
     """
     .wav files can be encoded in different formats. The format is given by the sample width
     which in turn determines the format character we should use to actually unpack the data
@@ -57,15 +54,15 @@ def estimateBPM(fname, window_length=3, levels=5):
     each window's bpm.
     """
 
-    ((nchannels, _, framerate, total_frames, _, _), wav_data) = wavLoad(fname)  # go ahead and get the wav data
+    ((nchannels, _, framerate, total_frames, _, _), wav_data) = wavLoad(fname)    # go ahead and get the wav data
 
-    left = decomposeChannels(nchannels, wav_data)[0]                            # we only need one channel of sound data
-    window_size = framerate * window_length                                     # number of frames in a window ((n frames / 1 second) * (m seconds))
+    left = decomposeChannels(nchannels, wav_data)[0]    # we only need one channel of sound data
+    window_size = framerate * window_length    # number of frames in a window ((n frames / 1 second) * (m seconds))
 
     bpms = [computeWindowBPM(left[(i - window_size):i], framerate, levels) \
                 for i in range(window_size, len(left), window_size)]            # get the bpms for every window
 
-    estimated_bpm = np.median(np.array(bpms))                                   # the median bpm is the bpm of the song
+    estimated_bpm = np.median(np.array(bpms))    # the median bpm is the bpm of the song
     return estimated_bpm
 
 
@@ -82,9 +79,9 @@ def extractDWTCoefficients(data, deg=4):
     """
     dC_list, aC_list = [], []
     for i in range(deg):
-        aC, dC = pywt.dwt(data, 'db4')                                          # We use the 4 coefficient Daubechies wavelets because the paper says so
-        dC_list.append(dC)                                                      # The length of each cascading transform is approximately halved
-        aC_list.append(aC)                                                      # Here's why: http://www.pybytes.com/pywavelets/ref/dwt-discrete-wavelet-transform.html#single-level-dwt
+        aC, dC = pywt.dwt(data, 'db4')    # We use the 4 coefficient Daubechies wavelets because the paper says so
+        dC_list.append(dC)    # The length of each cascading transform is approximately halved
+        aC_list.append(aC)    # Here's why: http://www.pybytes.com/pywavelets/ref/dwt-discrete-wavelet-transform.html#single-level-dwt
         data = aC
     return dC_list, aC_list
 
@@ -96,9 +93,9 @@ def detectPeak(data):
     in a window. (Full disclosure, I just copied this part verbatim from Scaperot)
     """
     max_val = np.amax(abs(data))
-    peak_ndx = np.where(data==max_val)
+    peak_ndx = np.where(data == max_val)
     if len(peak_ndx[0]) == 0:
-        peak_ndx = np.where(data==-max_val)
+        peak_ndx = np.where(data == -max_val)
     return peak_ndx
 
 
@@ -110,38 +107,40 @@ def computeWindowBPM(data, framerate, levels):
     """
 
     # 0) Extract DWTs
-    dCs, aCs = extractDWTCoefficients(data, levels)                             # We're going to need the high frequency decomposition (dCs)
+    dCs, aCs = extractDWTCoefficients(data, levels)    # We're going to need the high frequency decomposition (dCs)
 
     # 0.5 ) Extract relevant variables
-    max_downsample = 2**(levels - 1)                                            # This will be useful later for downsampling and calculating the final bpm
-    coeff_minlen = int(len(dCs[0])/max_downsample)                                   # We'll use this later to ensure the size of each window is the same during computation
-    min_idx = int(60. / 220 * (framerate/max_downsample))                            # Here we define the upper and lower bounds for tempos our program can find.
-    max_idx = int(60. / 40 * (framerate/max_downsample))                             # 220bpm = upper bound, 40bpm = lower bound
+    max_downsample = 2**(levels - 1)    # This will be useful later for downsampling and calculating the final bpm
+    coeff_minlen = int(len(dCs[0]) / max_downsample)    # We'll use this later to ensure the size of each window is the same during computation
+    min_idx = int(60. / 220 * (framerate / max_downsample))    # Here we define the upper and lower bounds for tempos our program can find.
+    max_idx = int(60. / 40 * (framerate / max_downsample))    # 220bpm = upper bound, 40bpm = lower bound
 
     # 1) Low Pass Filter (LPF)
-    dCs = [signal.lfilter([0.01], [1 -0.99], dC) for dC in dCs]                 # A low pass filter cleans up the noise at each frequency band
+    dCs = [signal.lfilter([0.01], [1 - 0.99], dC) for dC in dCs]    # A low pass filter cleans up the noise at each frequency band
 
     # 2) Full Wave Rectification (FWR)
-    dCs = [abs(dC) for dC in dCs]                                               # We want to make sure our signal values are >= 0
+    dCs = [abs(dC) for dC in dCs]    # We want to make sure our signal values are >= 0
 
     # 3) Downsampling (DOWN)
-    dCs = [dC[::2**(levels - 1 - i)] for i, dC in enumerate(dCs)]               # Remember how the size of each frequency band is roughly half the previous? Downsampling roughly equivocates the length of the bands
+    dCs = [dC[::2**(levels - 1 - i)] for i, dC in enumerate(dCs)
+           ]    # Remember how the size of each frequency band is roughly half the previous? Downsampling roughly equivocates the length of the bands
 
     # 4) Normalization (NORM)
     for i, dC in enumerate(dCs):
         mean = np.mean(dC)
-        dCs[i] = dC - mean                                                      # Normalize the data just by subtracting the mean
+        dCs[i] = dC - mean    # Normalize the data just by subtracting the mean
 
     # 5) Autocorrelation (ACRL)
-    dC_sum = np.zeros([coeff_minlen])                                           # We're going to perform the autocorrelation on the summation of each band
+    dC_sum = np.zeros([coeff_minlen])    # We're going to perform the autocorrelation on the summation of each band
     for dC in dCs:
-        dC_sum += dC[:coeff_minlen]                                             # To sum the bands up, each length needs to be exactly the same. Here's where coeff_minlen is handy!
-    correlation = np.correlate(dC_sum, dC_sum, 'full')                          # We're looking for pattern similarities at different times, which correspond to beats!
+        dC_sum += dC[:coeff_minlen]    # To sum the bands up, each length needs to be exactly the same. Here's where coeff_minlen is handy!
+    correlation = np.correlate(dC_sum, dC_sum, 'full')    # We're looking for pattern similarities at different times, which correspond to beats!
 
-    correlation_half = correlation[int(len(correlation)/2):]                         # The autocorrelation is symmetric, so we only need the latter half
-    peak_idx = detectPeak(correlation_half[min_idx:max_idx])[0] + min_idx       # We just want to get the index of the highest peak in the data, which we can use to find the bpm!
+    correlation_half = correlation[int(len(correlation) / 2):]    # The autocorrelation is symmetric, so we only need the latter half
+    peak_idx = detectPeak(
+        correlation_half[min_idx:max_idx])[0] + min_idx    # We just want to get the index of the highest peak in the data, which we can use to find the bpm!
 
-    bpm = 60. / peak_idx * (framerate/max_downsample)                           # Just like when we were determining the bounds, we can use the same formula to determine the bpm
+    bpm = 60. / peak_idx * (framerate / max_downsample)    # Just like when we were determining the bounds, we can use the same formula to determine the bpm
     print(bpm)
     return bpm
 

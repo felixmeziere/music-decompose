@@ -2,6 +2,7 @@
 Add dynamic attributes to Abstract admin models
 """
 
+
 def make_processor_admin(ProcessorSubClass, ProcessorAdminSubClass):
     """
     Add attributes to Processor Admin based on parameters
@@ -10,6 +11,7 @@ def make_processor_admin(ProcessorSubClass, ProcessorAdminSubClass):
     ProcessorAdminSubClass.readonly_fields += ProcessorSubClass.parameters
     ProcessorAdminSubClass.list_display += ProcessorSubClass.parameters
     ProcessorAdminSubClass.ordering += ProcessorSubClass.parameters
+
 
 def make_processor_inline(ProcessorSubClass, ProcessorInlineSubClass):
     """

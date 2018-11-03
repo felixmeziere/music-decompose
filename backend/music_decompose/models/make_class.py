@@ -4,10 +4,12 @@ Add fields and properties dynamically to abstract classes defined in this folder
 import numpy as np
 from music_decompose.services import load_ndarrays_from_hdf5
 
+
 def get_data_field_getter(data_field):
     """
     Return the property getter customised with data_field.
     """
+
     def data_field_getter(self):
         """
         Return value of data_field. If value still not loaded in instance, load
@@ -20,12 +22,15 @@ def get_data_field_getter(data_field):
                 [self._get_dataset_path(data_field)],
             )
         return value
+
     return data_field_getter
+
 
 def get_data_field_setter(data_field):
     """
     Return the property setter customised with data_field.
     """
+
     def data_field_setter(self, value):
         """
         Set value of data_field in the instance.
@@ -33,6 +38,7 @@ def get_data_field_setter(data_field):
         if value is not None and not isinstance(value, np.ndarray):
             raise TypeError('Only numpy arrays should be given to a Container as data_field')
         setattr(self, '_' + data_field, value)
+
     return data_field_setter
 
 

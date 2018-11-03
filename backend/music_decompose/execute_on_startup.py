@@ -10,7 +10,6 @@ from music_decompose.services import get_leaf_submodels
 from music_decompose.models import Container
 from music_decompose.admin import ProcessorAdmin, ProcessorInline
 
-
 for model in get_leaf_submodels(Container):
     make_container(model)
 

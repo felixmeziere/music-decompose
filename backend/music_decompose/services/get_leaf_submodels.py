@@ -2,6 +2,8 @@
 Recursively get all leaf submodels of a class.
 These are submodels of the class that aren't abstract
 """
+
+
 def get_leaf_submodels(model):
     """
     Recursively get all leaf submodels of a model

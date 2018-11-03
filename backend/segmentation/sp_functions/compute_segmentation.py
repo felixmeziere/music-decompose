@@ -1,8 +1,8 @@
-
 """
 Segment the song and return the semgent start samples
 """
 import numpy as np
+
 
 def compute_segmentation(method, song_WF, sample_rate, tempo, n_tempo_lags_per_segment):
     """

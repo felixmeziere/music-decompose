@@ -21,6 +21,7 @@ class Command(BaseCommand):
     """
     Django management command
     """
+
     def handle(self, *args, **options):
         """
         Restart celery on django dev server restart

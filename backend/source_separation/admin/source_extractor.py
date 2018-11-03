@@ -6,6 +6,7 @@ from source_separation.models import SourceExtractor
 from source_separation.admin.source import SourceInline
 from music_decompose.admin import ProcessorAdmin, ProcessorInline
 
+
 class SourceExtractorInline(ProcessorInline):
     """
     Source Extractor Inline
@@ -18,5 +19,5 @@ class SourceExtractorAdmin(ProcessorAdmin):
     """
     Admin for SourceExtractor model.
     """
-    inlines = (SourceInline,)
+    inlines = (SourceInline, )
     actions = ProcessorAdmin.actions + ()

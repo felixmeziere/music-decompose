@@ -6,6 +6,7 @@ import soundfile as sf
 import numpy as np
 from django.conf import settings
 
+
 def rank_4_audacity(i):
     """
     Used to format the indexes with preceding zeros so that

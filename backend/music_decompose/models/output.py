@@ -33,7 +33,7 @@ class Output(Container):    # pylint: disable=W0223
     def __init__(self, *args, **kwargs):
         super(Output, self).__init__(*args, **kwargs)
         if not set(('parent', 'ind')) <= set(self.unique_together):
-            raise TypeError('unique_together should start with \'parent\' and \'ind\'.')
+            raise TypeError('unique_together  start with \'parent\' and \'ind\'.')
 
     def __str__(self):
         return '{0} {1} for Song: {2}'.format(self.__class__.__name__, self.ind, self.song)
